@@ -10,7 +10,7 @@ public:
   Level();
   ~Level();
 
-  void Draw(Window& l_window);
+  void Draw(Window& l_window, sf::View view);
 
 protected:
   sf::Texture texture;

@@ -168,7 +168,7 @@ void Game::Render() {
   else if(m_state == GameState::GamePlay)
   {
     //m_enemy.Draw(m_window);
-    testLevel.Draw(m_window);
+    testLevel.Draw(m_window, m_gameCamera);
     m_Player1.Draw(m_window);
   }
   else if(m_state == GameState::Options)
