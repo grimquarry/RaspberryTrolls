@@ -32,6 +32,8 @@ public:
 
   void MovePlayer();
 
+  void CollisionCheck(std::vector<sf::Vector2i> collidableObjects);
+
   void Draw(Window& l_window);
 
 protected:

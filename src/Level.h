@@ -10,6 +10,8 @@ public:
   Level();
   ~Level();
 
+  std::vector<sf::Vector2i> GetVisiblePlatforms();
+
   void Draw(Window& l_window, sf::View view);
 
 protected:
@@ -22,5 +24,5 @@ private:
   int m_LevelWidth;
   int m_LevelHeight;
 
-  std::vector<sf::Vector2u> m_visibleTileCoords;
+  std::vector<sf::Vector2i> m_visibleTileCoords;
 };

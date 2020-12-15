@@ -94,6 +94,61 @@ void Player::MovePlayer()
   }
 }
 
+void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
+{
+  // std::cout << collidableObjects.size() << std::endl;
+  // std::cout << "Player: " << m_PlayerPosX << ", " << m_PlayerPosY << std::endl;
+  for(int i = 0; i < collidableObjects.size(); i++)
+  {
+    int objectWidth = 200; //This variable and objectHeight are specific to nectarine branch platform sprites
+    int objectHeight = 75;  //I will likely need to rework things to fit other platform sizes (25x25 for example)
+    int objectStartX = collidableObjects[i].x;
+    int objectEndX = collidableObjects[i].x + objectWidth;
+    int objectStartY = collidableObjects[i].y;
+    int objectEndY = collidableObjects[i].y + objectHeight;
+
+    if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX && m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
+    {
+      switch (m_CurrentMovement)
+      {
+        case PlayerMovement::Right:
+        m_PlayerPosX = objectStartX - m_PlayerWidth;
+        break;
+        case PlayerMovement::Left:
+        m_PlayerPosX = objectEndX;
+        break;
+        case PlayerMovement::Up:
+        m_PlayerPosY = objectEndY;
+        break;
+        case PlayerMovement::Down:
+        m_PlayerPosY = objectStartY - m_PlayerHeight;
+        break;
+      }
+      //std::cout << "Collision Detected" << std::endl;
+    }
+    if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX < objectEndX &&
+      m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY < objectEndY)
+      {
+        switch (m_CurrentMovement)
+        {
+          case PlayerMovement::Right:
+          m_PlayerPosX = objectStartX - m_PlayerWidth;
+          break;
+          case PlayerMovement::Left:
+          m_PlayerPosX = objectEndX;
+          break;
+          case PlayerMovement::Up:
+          m_PlayerPosY = objectEndY;
+          break;
+          case PlayerMovement::Down:
+          m_PlayerPosY = objectStartY - m_PlayerHeight;
+          break;
+        }
+      }
+    //std::cout << "Object " << i << ": " << collidableObjects[i].x << " , " << collidableObjects[i].y << std::endl;
+  }
+}
+
 void Player::Draw(Window& l_window)
 {
   int index = (int)GetPlayerMovement();
