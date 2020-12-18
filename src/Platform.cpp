@@ -17,6 +17,17 @@ void Platform::SetTexture()
   m_PlatformHeight = m_PlatformSprite.getGlobalBounds().height;
 }
 
+int GetWidth()
+{
+  m_PlatformWidth = (int)m_PlatformSprite.getGlobalBounds().width;
+  return m_PlatformWidth;
+}
+int GetHeight()
+{
+  m_PlatformHeight = (int)m_PlatformSprite.getGlobalBounds().height;
+  return m_PlatformHeight;
+}
+
 void Platform::SetPosition(int x, int y)
 {
   m_PlatformSprite.setPosition(x, y);

@@ -15,6 +15,9 @@ public:
 
   void SetPosition(int x, int y);
 
+  int GetWidth();
+  int GetHeight();
+
   void Draw(Window& l_window);
 
 protected:
