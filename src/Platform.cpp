@@ -13,18 +13,18 @@ void Platform::LoadTexture(std::string imgPath)
 void Platform::SetTexture()
 {
   m_PlatformSprite.setTexture(m_PlatformTexture);
-  m_PlatformWidth = m_PlatformSprite.getGlobalBounds().width;
-  m_PlatformHeight = m_PlatformSprite.getGlobalBounds().height;
+  // m_PlatformWidth = m_PlatformSprite.getGlobalBounds().width;
+  // m_PlatformHeight = m_PlatformSprite.getGlobalBounds().height;
 }
 
-int GetWidth()
+int Platform::GetWidth()
 {
-  m_PlatformWidth = (int)m_PlatformSprite.getGlobalBounds().width;
+  m_PlatformWidth = m_PlatformSprite.getGlobalBounds().width;
   return m_PlatformWidth;
 }
-int GetHeight()
+int Platform::GetHeight()
 {
-  m_PlatformHeight = (int)m_PlatformSprite.getGlobalBounds().height;
+  m_PlatformHeight = m_PlatformSprite.getGlobalBounds().height;
   return m_PlatformHeight;
 }
 
