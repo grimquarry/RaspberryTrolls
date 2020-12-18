@@ -4,7 +4,6 @@
 
 #include "Window.h"
 #include "GameState.h"
-#include "Enemy.h"
 #include "TitleScreen.h"
 #include "Menu.h"
 #include "OptionsScreen.h"
@@ -29,7 +28,6 @@ protected: //Apperantly anything tied to an SFML texture must be public or prote
 private:
   Window m_window;
   sf::View m_gameCamera;
-  Enemy m_enemy;
   GameState m_state;
 
   TitleScreen m_titleScreen;
