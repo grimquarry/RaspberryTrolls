@@ -3,11 +3,13 @@
 
 Level::Level()
 {
-  if(!texture.loadFromFile("../resources/images/nectarineBranch_2.png"))
-  {
-    std::cout << "Failed to load file" << std::endl;
-  }
-  sprite.setTexture(texture);
+  // if(!texture.loadFromFile("../resources/images/nectarineBranch_2.png"))
+  // {
+  //   std::cout << "Failed to load file" << std::endl;
+  // }
+  // sprite.setTexture(texture);
+  platform.LoadTexture("../resources/images/nectarineBranch_2.png");
+  platform.SetTexture();
 
   sLevelMap += "-...............................................................";
   sLevelMap += ".--.............................................................";
@@ -52,11 +54,12 @@ void Level::Draw(Window& l_window, sf::View view)
       int platformLocationY = y * 75;
       if(sLevelMap[tileIndex] == '-' && platformLocationX > minXView && platformLocationX < maxXView)
       {
-        sprite.setPosition(platformLocationX, platformLocationY);
+        platform.SetPosition(platformLocationX, platformLocationY);
         m_visibleTileCoords.push_back({platformLocationX, platformLocationY});
         //std::cout << "\nX: " << x*200 << "\nY: " << y * 75 << std::endl;
         //std::cout << tileIndex << std::endl;
-        l_window.Draw(sprite);
+        //l_window.Draw(sprite);
+        platform.Draw(l_window);
       }
       tileIndex++;
     }

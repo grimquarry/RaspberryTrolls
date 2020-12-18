@@ -3,6 +3,7 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include "Window.h"
+#include "Platform.h"
 
 class Level
 {
@@ -17,7 +18,7 @@ public:
 protected:
   sf::Texture texture;
   sf::Sprite sprite;
-
+  Platform platform;
   std::string sLevelMap;
 
 private:
