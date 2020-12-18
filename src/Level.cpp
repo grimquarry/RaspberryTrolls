@@ -8,8 +8,9 @@ Level::Level()
   //   std::cout << "Failed to load file" << std::endl;
   // }
   // sprite.setTexture(texture);
-  platform.LoadTexture("../resources/images/nectarineBranch_2.png");
-  platform.SetTexture();
+  // platform.LoadTexture("../resources/images/nectarineBranch_2.png");
+  // platform.SetTexture();
+  AddPlatformSprite("../resources/images/nectarineBranch_2.png");
 
   // sLevelMap += "-...............................................................";
   // sLevelMap += ".--.............................................................";
@@ -66,6 +67,14 @@ void Level::LoadLevelMap(std::string mapPath)
   //std::cout << m_LevelMap << std::endl;
 }
 
+void Level::AddPlatformSprite(std::string imgPath)
+{
+  m_PlatformSprite.LoadTexture(imgPath);
+  m_PlatformSprite.SetTexture();
+
+  m_PlatformSprites.push_back(m_PlatformSprite);
+}
+
 void Level::Draw(Window& l_window, sf::View view)
 {
   int tileIndex = 0;
@@ -81,12 +90,12 @@ void Level::Draw(Window& l_window, sf::View view)
       int platformLocationY = y * 75;
       if(m_LevelMap[tileIndex] == '0' && platformLocationX > minXView && platformLocationX < maxXView)
       {
-        platform.SetPosition(platformLocationX, platformLocationY);
+        m_PlatformSprites[0].SetPosition(platformLocationX, platformLocationY);
         m_visibleTileCoords.push_back({platformLocationX, platformLocationY});
         //std::cout << "\nX: " << x*200 << "\nY: " << y * 75 << std::endl;
         //std::cout << tileIndex << std::endl;
         //l_window.Draw(sprite);
-        platform.Draw(l_window);
+        m_PlatformSprites[0].Draw(l_window);
       }
       tileIndex++;
     }

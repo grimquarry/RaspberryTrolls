@@ -15,13 +15,14 @@ public:
   std::vector<sf::Vector2i> GetVisiblePlatforms();
 
   void LoadLevelMap(std::string mapPath);
+  void AddPlatformSprite(std::string imgPath);
 
   void Draw(Window& l_window, sf::View view);
 
 protected:
   sf::Texture texture;
   sf::Sprite sprite;
-  Platform platform;
+  Platform m_PlatformSprite;
   //std::string sLevelMap;
 
 private:
@@ -30,6 +31,8 @@ private:
 
   std::string m_LevelMap;
   std::fstream m_LevelFile;
+
+  std::vector<Platform> m_PlatformSprites;
 
   std::vector<sf::Vector2i> m_visibleTileCoords;
 };
