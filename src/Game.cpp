@@ -28,6 +28,7 @@ Game::Game()
   // m_gameCamera.setCenter(930, 482);
 
   //std::cout << "Camera Center: " << m_gameCamera.getCenter().x << std::endl;
+  testLevel.LoadLevelMap("../maps/level_1_1");
 }
 Game::~Game() { m_window.Close(); }
 

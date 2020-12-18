@@ -11,21 +11,21 @@ Level::Level()
   platform.LoadTexture("../resources/images/nectarineBranch_2.png");
   platform.SetTexture();
 
-  sLevelMap += "-...............................................................";
-  sLevelMap += ".--.............................................................";
-  sLevelMap += "...---..........................................................";
-  sLevelMap += "......----......................................................";
-  sLevelMap += "...---..........................................................";
-  sLevelMap += ".--.............................................................";
-  sLevelMap += "-...............................................................";
-  sLevelMap += ".--.............................................................";
-  sLevelMap += "...---..........................................................";
-  sLevelMap += "......----......................................................";
-  sLevelMap += "................................................................";
-  sLevelMap += "-...............................................................";
-  sLevelMap += "--..............................................................";
-  sLevelMap += "--.---..........................................................";
-  std::cout << sLevelMap << std::endl;
+  // sLevelMap += "-...............................................................";
+  // sLevelMap += ".--.............................................................";
+  // sLevelMap += "...---..........................................................";
+  // sLevelMap += "......----......................................................";
+  // sLevelMap += "...---..........................................................";
+  // sLevelMap += ".--.............................................................";
+  // sLevelMap += "-...............................................................";
+  // sLevelMap += ".--.............................................................";
+  // sLevelMap += "...---..........................................................";
+  // sLevelMap += "......----......................................................";
+  // sLevelMap += "................................................................";
+  // sLevelMap += "-...............................................................";
+  // sLevelMap += "--..............................................................";
+  // sLevelMap += "--.---..........................................................";
+  // std::cout << sLevelMap << std::endl;
 
 }
 
@@ -37,6 +37,33 @@ Level::~Level()
 std::vector<sf::Vector2i> Level::GetVisiblePlatforms()
 {
   return m_visibleTileCoords;
+}
+
+void Level::LoadLevelMap(std::string mapPath)
+{
+  std::string line;
+  m_LevelFile.open(mapPath);
+
+  while(m_LevelFile)
+  {
+    getline(m_LevelFile, line);
+    std::cout << line << std::endl;
+    m_LevelMap += line;
+  }
+  // if(!m_LevelFile)
+  // {
+  //   std::cout << "This is the fucking issue" << std::endl;
+  // }
+  // while(m_LevelFile)
+  // {
+  //   getline(m_LevelFile, m_LevelMap);
+  // }
+  // std::cout << "What" << m_LevelMap;
+  m_LevelFile.close();
+
+  //m_LevelMap.erase(std::remove(m_LevelMap.begin(), m_LevelMap.end(), '\n'), m_LevelMap.end());
+
+  //std::cout << m_LevelMap << std::endl;
 }
 
 void Level::Draw(Window& l_window, sf::View view)
@@ -52,7 +79,7 @@ void Level::Draw(Window& l_window, sf::View view)
     {
       int platformLocationX = x * 200;
       int platformLocationY = y * 75;
-      if(sLevelMap[tileIndex] == '-' && platformLocationX > minXView && platformLocationX < maxXView)
+      if(m_LevelMap[tileIndex] == '0' && platformLocationX > minXView && platformLocationX < maxXView)
       {
         platform.SetPosition(platformLocationX, platformLocationY);
         m_visibleTileCoords.push_back({platformLocationX, platformLocationY});
@@ -64,5 +91,4 @@ void Level::Draw(Window& l_window, sf::View view)
       tileIndex++;
     }
   }
-
 }
