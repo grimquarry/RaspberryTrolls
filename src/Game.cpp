@@ -28,7 +28,8 @@ Game::Game()
   // m_gameCamera.setCenter(930, 482);
 
   //std::cout << "Camera Center: " << m_gameCamera.getCenter().x << std::endl;
-  testLevel.LoadLevelMap("../maps/level_1_1");
+  //testLevel.LoadLevelMap("../maps/level_1_1");
+  m_LevelManager.BuildLevel();
 }
 Game::~Game() { m_window.Close(); }
 
@@ -149,7 +150,7 @@ void Game::Update()
       m_Player1.SetPlayerMovement(PlayerMovement::Down);
       m_Player1.MovePlayer();
     }
-    m_Player1.CollisionCheck(testLevel.GetVisiblePlatforms());
+    m_Player1.CollisionCheck(m_LevelManager.GetVisiblePlatforms());
     /*A static display bar with score and stuff can be put here.  When you do, make sure to create a Window function fot GetDefaultView as outlined in SFML documentation:
     https://www.sfml-dev.org/documentation/2.5.1/classsf_1_1RenderTarget.php#ad3b533c3f899d7044d981ed607aef9be
     Then it's a matter of running m_window.setView(m_window.GetDefaultView()) as explained in this video: https://youtu.be/SAXmkvICHbI?t=600
@@ -170,7 +171,7 @@ void Game::Render() {
   else if(m_state == GameState::GamePlay)
   {
     //m_enemy.Draw(m_window);
-    testLevel.Draw(m_window, m_gameCamera);
+    m_LevelManager.DrawLevel(m_window, m_gameCamera);
     m_Player1.Draw(m_window);
   }
   else if(m_state == GameState::Options)

@@ -7,7 +7,8 @@
 #include "TitleScreen.h"
 #include "Menu.h"
 #include "OptionsScreen.h"
-#include "Level.h" //Likely will need to change this to LevelManger, this is for testing purposes.
+//#include "Level.h" //Likely will need to change this to LevelManger, this is for testing purposes.
+#include "LevelManager.h"
 #include "Player.h"
 
 
@@ -22,13 +23,15 @@ public:
   Window* GetWindow();
 
 protected: //Apperantly anything tied to an SFML texture must be public or protected (perhaps it's how I'm using it?  possibly incorrectly?)
-  Level testLevel;
+  // Level testLevel;
   Player m_Player1;
 
 private:
   Window m_window;
   sf::View m_gameCamera;
   GameState m_state;
+
+  LevelManager m_LevelManager;
 
   TitleScreen m_titleScreen;
   Menu m_menu;

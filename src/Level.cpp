@@ -10,7 +10,7 @@ Level::Level()
   // sprite.setTexture(texture);
   // platform.LoadTexture("../resources/images/nectarineBranch_2.png");
   // platform.SetTexture();
-  AddPlatformSprite("../resources/images/nectarineBranch_2.png");
+  //AddPlatformSprite("../resources/images/nectarineBranch_2.png");
 
   // sLevelMap += "-...............................................................";
   // sLevelMap += ".--.............................................................";
