@@ -92,6 +92,7 @@ void Player::MovePlayer()
     m_PlayerPosX += 0.0f;
     SetPosition(m_PlayerPosX, m_PlayerPosY);
   }
+
 }
 
 void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
@@ -109,6 +110,7 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
 
     if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX && m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
     {
+      //m_IsColliding = true;
       switch (m_CurrentMovement)
       {
         case PlayerMovement::Right:
@@ -118,7 +120,12 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
         m_PlayerPosX = objectEndX;
         break;
         case PlayerMovement::Up:
-        m_PlayerPosY = objectEndY;
+        // std::cout << "Player Y position before: " << m_PlayerPosY << std::endl;
+        // std::cout << "Object Y position before: " << objectEndY << std::endl;
+        // m_PlayerPosY = objectEndY;
+        // std::cout << "Player Y position after: " << m_PlayerPosY << std::endl;
+        // std::cout << "Object Y position after: " << objectEndY << std::endl;
+        // std::cout << "**************************************************" << std::endl;
         break;
         case PlayerMovement::Down:
         m_PlayerPosY = objectStartY - m_PlayerHeight;
@@ -129,6 +136,7 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
     if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX < objectEndX &&
       m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY < objectEndY)
       {
+        //m_IsColliding = true;
         switch (m_CurrentMovement)
         {
           case PlayerMovement::Right:
@@ -145,6 +153,11 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
           break;
         }
       }
+      // else
+      // {
+      //   m_IsColliding = false;
+      // }
+      SetPosition(m_PlayerPosX, m_PlayerPosY);
     //std::cout << "Object " << i << ": " << collidableObjects[i].x << " , " << collidableObjects[i].y << std::endl;
   }
 }

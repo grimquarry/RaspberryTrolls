@@ -49,5 +49,6 @@ private:
   float m_PlayerVelY;
   float m_PlayerWidth;
   float m_PlayerHeight;
+  //bool m_IsColliding;
 
 };
