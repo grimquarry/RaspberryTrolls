@@ -12,10 +12,13 @@ public:
 
   void BuildLevel();
 
+  bool CheckLevelChange();
+  void SetLevelChange(bool lvlchange);
+
   void DrawLevel(Window& l_window, sf::View view);
 
 private:
-  bool m_ChangeLevel;
+  bool m_LevelChange;
   Level m_Level_1_1;
-  float m_CurrentLevel;
+  int m_CurrentLevel;
 };
