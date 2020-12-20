@@ -6,6 +6,9 @@ Player::Player()
   m_PlayerTexture.loadFromFile("../resources/images/BucketsTile.png");
   m_PlayerSprite.setTexture(m_PlayerTexture);
 
+  m_PlayerVelX = 5.f;
+  m_PlayerVelY = 5.f;
+
   // m_PlayerPosX = 5.0f;
   // m_PlayerPosY = 19.0f;
   //
@@ -63,28 +66,28 @@ PlayerMovement Player::GetPlayerMovement()
   return m_CurrentMovement;
 }
 
-void Player::MovePlayer()
+void Player::MovePlayer(float timeElapsed)
 {
   //std::cout << "Player X Position: " << m_PlayerPosX << std::endl;
   if(m_CurrentMovement == PlayerMovement::Right)
   {
-    m_PlayerPosX += 5.0f;
+    m_PlayerPosX += (m_PlayerVelX * timeElapsed);
     SetPosition(m_PlayerPosX, m_PlayerPosY);
     //std::cout << "I ran" << std::endl;
   }
   else if(m_CurrentMovement == PlayerMovement::Left)
   {
-    m_PlayerPosX -= 5.0f;
+    m_PlayerPosX -= (m_PlayerVelX * timeElapsed);
     SetPosition(m_PlayerPosX, m_PlayerPosY);
   }
   else if(m_CurrentMovement == PlayerMovement::Up)
   {
-    m_PlayerPosY -= 5.0f;
+    m_PlayerPosY -= (m_PlayerVelY * timeElapsed);
     SetPosition(m_PlayerPosX, m_PlayerPosY);
   }
   else if(m_CurrentMovement == PlayerMovement::Down)
   {
-    m_PlayerPosY += 5.0f;
+    m_PlayerPosY += (m_PlayerVelY * timeElapsed);
     SetPosition(m_PlayerPosX, m_PlayerPosY);
   }
   else if (m_CurrentMovement == PlayerMovement::Still)

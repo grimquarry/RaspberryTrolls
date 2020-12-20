@@ -30,7 +30,7 @@ public:
 
   PlayerMovement GetPlayerMovement();
 
-  void MovePlayer();
+  void MovePlayer(float timeElapsed);
 
   void CollisionCheck(std::vector<sf::Vector2i> collidableObjects);
 

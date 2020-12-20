@@ -2,6 +2,9 @@
 
 #include <vector>
 
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Time.hpp>
+
 #include "Window.h"
 #include "GameState.h"
 #include "TitleScreen.h"
@@ -29,6 +32,8 @@ protected: //Apperantly anything tied to an SFML texture must be public or prote
 private:
   Window m_window;
   sf::View m_gameCamera;
+  sf::Time m_ElapsedTime;
+  sf::Clock m_GameClock;
   GameState m_state;
 
   LevelManager m_LevelManager;

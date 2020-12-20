@@ -2,6 +2,8 @@
 
 Game::Game()
 {
+  m_ElapsedTime = sf::seconds(0.01f);
+
   m_state = GameState::Title;
   m_titleSelectBuffer.push_back("Play");
   m_titleSelectBuffer.push_back("Options");
@@ -39,8 +41,12 @@ void Game::Update()
 {
   // std::cout << "Controller X Axis Postion is: " << sf::Joystick::getAxisPosition(0, sf::Joystick::X) << std::endl;
   // std::cout << "Controller Y Axis Positsion is: " << sf::Joystick::getAxisPosition(0, sf::Joystick::Y) << std::endl;
+
+  m_ElapsedTime = m_GameClock.restart();
   m_window.Update();
   m_state = m_window.GetState();
+
+
   if(m_state == GameState::Title)
   {
     m_menu.SetPosition(m_window.GetSize().x, m_window.GetSize().y);
@@ -130,25 +136,26 @@ void Game::Update()
     }
 
     m_window.SetView(m_gameCamera);
+    float fTimeElapsed = m_ElapsedTime.asSeconds() * 60; //multiplying by max framerate (set in Window class) to keep player from moving slowly
     if(m_window.GetPlayerDirective() == "Right")
     {
       m_Player1.SetPlayerMovement(PlayerMovement::Right);
-      m_Player1.MovePlayer();
+      m_Player1.MovePlayer(fTimeElapsed);
     }
     else if(m_window.GetPlayerDirective() == "Left")
     {
       m_Player1.SetPlayerMovement(PlayerMovement::Left);
-      m_Player1.MovePlayer();
+      m_Player1.MovePlayer(fTimeElapsed);
     }
     else if(m_window.GetPlayerDirective() == "Up")
     {
       m_Player1.SetPlayerMovement(PlayerMovement::Up);
-      m_Player1.MovePlayer();
+      m_Player1.MovePlayer(fTimeElapsed);
     }
     else if(m_window.GetPlayerDirective() == "Down")
     {
       m_Player1.SetPlayerMovement(PlayerMovement::Down);
-      m_Player1.MovePlayer();
+      m_Player1.MovePlayer(fTimeElapsed);
     }
 
     if(m_LevelManager.CheckLevelChange())
