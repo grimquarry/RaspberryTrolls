@@ -93,11 +93,25 @@ void EventManager::HandleEvent(sf::Event& l_event)
           m_PreviousMoveDirective = m_PlayerMoveDirective;
           m_PlayerMoveDirective = "Up";
         }
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+        {
+          if(m_PlayerActionDirective != "Jump")
+          {
+            m_PlayerActionDirective = "Jump";
+          }
+
+        }
       }
     break;
     case(EventType::KeyReleased):
       switch (l_event.key.code)
       {
+        case sf::Keyboard::Space:
+          if(m_state == GameState::GamePlay)
+          {
+            m_PlayerActionDirective = "None";
+          }
         case sf::Keyboard::Up:
           if(m_state == GameState::Title || m_state == GameState::Options) // might need to add the paused games stat here, too
           {
@@ -225,6 +239,7 @@ GameState EventManager::GetState() const { return m_state; }
 std::string EventManager::GetMenuDirection() const { return m_menuDirection; }
 
 std::string EventManager::GetPlayerDirective() const { return m_PlayerMoveDirective; }
+std::string EventManager::GetPlayerAction() const { return m_PlayerActionDirective; }
 
 void EventManager::SetControllers()
 {

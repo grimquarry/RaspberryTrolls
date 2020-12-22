@@ -21,14 +21,6 @@ enum class EventType {
   Count = sf::Event::Count
 };
 
-// enum class KeyID
-// {
-//   Left = sf::Keyboard::Left,
-//   Right = sf::Keyboard::Right,
-//   Up = sf::Keyboard::Up,
-//   Down = sf::Keyboard::Down
-// };
-
 class EventManager {
 public:
   EventManager();
@@ -45,6 +37,7 @@ public:
   GameState GetState() const;
   std::string GetMenuDirection() const;
   std::string GetPlayerDirective() const;
+  std::string GetPlayerAction() const;
 
 
   void SetControllers();
@@ -56,7 +49,6 @@ private:
   bool m_changeState;
   bool m_navigateMenu;
   bool m_menuItemSelected;
-  //bool m_2ndKeyPressed;
   GameState m_state;
   std::string m_menuDirection;
 
@@ -67,6 +59,6 @@ private:
 
   std::string m_PlayerMoveDirective;
   std::string m_PreviousMoveDirective; //Keep track of last directive for keyboard press logic
-
-
+  std::string m_PlayerActionDirective; //I should create vector buffer for action directives as more than one can happen at a timeElapsed
+                                      //For example, you can attack and jump at the same time.
 };

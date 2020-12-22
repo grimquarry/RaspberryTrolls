@@ -71,6 +71,7 @@ void Window::Update()
     if(m_state == GameState::GamePlay)
     {
       m_PlayerDirective = m_eventManager.GetPlayerDirective();
+      m_PlayerAction = m_eventManager.GetPlayerAction();
     }
   }
 }
@@ -101,3 +102,5 @@ sf::Vector2u Window::GetSize()
 }
 
 std::string Window::GetPlayerDirective() const { return m_PlayerDirective; }
+
+std::string Window::GetPlayerAction() const { return m_PlayerAction; }

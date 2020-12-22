@@ -3,18 +3,15 @@
 Player::Player()
 {
   m_CurrentMovement = PlayerMovement::Still;
+  m_CurrentAction = PlayerAction::None;
   m_PlayerTexture.loadFromFile("../resources/images/BucketsTile.png");
   m_PlayerSprite.setTexture(m_PlayerTexture);
 
   m_PlayerVelX = 5.f;
   m_PlayerVelY = 5.f;
+  m_Gravity = 5.f;
 
-  // m_PlayerPosX = 5.0f;
-  // m_PlayerPosY = 19.0f;
-  //
-  // m_PlayerSprite.setOrigin(m_PlayerPosX, m_PlayerPosY);
-
-  //m_PlayerSprite.setPosition(m_PlayerPosX, m_PlayerPosY);
+  m_OnGround = false;
 }
 
 Player::~Player() { }
@@ -33,7 +30,6 @@ float Player::GetPlayerHeight()
 
 sf::Vector2f Player::GetPosition()
 {
-  //std::cout << "X: " << m_PlayerPosX << "\nY: " << m_PlayerPosY << std::endl;
   return { m_PlayerPosX, m_PlayerPosY };
 }
 
@@ -66,42 +62,46 @@ PlayerMovement Player::GetPlayerMovement()
   return m_CurrentMovement;
 }
 
+void Player::SetPlayerAction(PlayerAction action)
+{
+  m_CurrentAction = action;
+}
+
 void Player::MovePlayer(float timeElapsed)
 {
-  //std::cout << "Player X Position: " << m_PlayerPosX << std::endl;
+  //Give player based on directive new position
   if(m_CurrentMovement == PlayerMovement::Right)
   {
     m_PlayerPosX += (m_PlayerVelX * timeElapsed);
-    SetPosition(m_PlayerPosX, m_PlayerPosY);
-    //std::cout << "I ran" << std::endl;
   }
   else if(m_CurrentMovement == PlayerMovement::Left)
   {
     m_PlayerPosX -= (m_PlayerVelX * timeElapsed);
-    SetPosition(m_PlayerPosX, m_PlayerPosY);
   }
   else if(m_CurrentMovement == PlayerMovement::Up)
   {
     m_PlayerPosY -= (m_PlayerVelY * timeElapsed);
-    SetPosition(m_PlayerPosX, m_PlayerPosY);
   }
   else if(m_CurrentMovement == PlayerMovement::Down)
   {
     m_PlayerPosY += (m_PlayerVelY * timeElapsed);
-    SetPosition(m_PlayerPosX, m_PlayerPosY);
   }
   else if (m_CurrentMovement == PlayerMovement::Still)
   {
-    m_PlayerPosX += 0.0f;
-    SetPosition(m_PlayerPosX, m_PlayerPosY);
-  }
 
+  }
+  //Put player in the new postion
+  SetPosition(m_PlayerPosX, m_PlayerPosY);
+}
+
+void Player::Jump(float timeElapsed)
+{
+  m_PlayerPosY -= 10.f;
 }
 
 void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
 {
-  // std::cout << collidableObjects.size() << std::endl;
-  // std::cout << "Player: " << m_PlayerPosX << ", " << m_PlayerPosY << std::endl;
+  m_OnGround = false;
   for(int i = 0; i < collidableObjects.size(); i++)
   {
     int objectWidth = 200; //This variable and objectHeight are specific to nectarine branch platform sprites
@@ -111,59 +111,153 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
     int objectStartY = collidableObjects[i].y;
     int objectEndY = collidableObjects[i].y + objectHeight;
 
-    if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX && m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
+    //Using if instead of switch because there can be more than one action.
+    if(m_CurrentAction == PlayerAction::Jump)
     {
-      //m_IsColliding = true;
-      switch (m_CurrentMovement)
-      {
-        case PlayerMovement::Right:
-        m_PlayerPosX = objectStartX - m_PlayerWidth;
-        break;
-        case PlayerMovement::Left:
-        m_PlayerPosX = objectEndX;
-        break;
-        case PlayerMovement::Up:
-        // std::cout << "Player Y position before: " << m_PlayerPosY << std::endl;
-        // std::cout << "Object Y position before: " << objectEndY << std::endl;
-        // m_PlayerPosY = objectEndY;
-        // std::cout << "Player Y position after: " << m_PlayerPosY << std::endl;
-        // std::cout << "Object Y position after: " << objectEndY << std::endl;
-        // std::cout << "**************************************************" << std::endl;
-        break;
-        case PlayerMovement::Down:
-        m_PlayerPosY = objectStartY - m_PlayerHeight;
-        break;
-      }
-      //std::cout << "Collision Detected" << std::endl;
-    }
-    if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX < objectEndX &&
-      m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY < objectEndY)
-      {
-        //m_IsColliding = true;
-        switch (m_CurrentMovement)
+      //std::cout << "Triggered" << std::endl;
+      if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
+        m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
         {
-          case PlayerMovement::Right:
-          m_PlayerPosX = objectStartX - m_PlayerWidth;
-          break;
-          case PlayerMovement::Left:
-          m_PlayerPosX = objectEndX;
-          break;
-          case PlayerMovement::Up:
           m_PlayerPosY = objectEndY;
-          break;
-          case PlayerMovement::Down:
-          m_PlayerPosY = objectStartY - m_PlayerHeight;
-          break;
         }
-      }
-      // else
-      // {
-      //   m_IsColliding = false;
-      // }
-      SetPosition(m_PlayerPosX, m_PlayerPosY);
-    //std::cout << "Object " << i << ": " << collidableObjects[i].x << " , " << collidableObjects[i].y << std::endl;
+      //Account for collisions on the player's upper left
+      else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
+        m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
+        {
+          m_PlayerPosY = objectEndY;
+        }
+    }
+
+    switch(m_CurrentMovement){
+      case PlayerMovement::Right:
+        //I could have put all this in a large if statement, but decided to break it up with if/else, which probably isn't good
+        //practice despite making it easier to read.  There's got to be a better way of doing this, though.
+        //Foot Collision
+        if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX
+          && m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
+          {
+            m_PlayerPosX = objectStartX - m_PlayerWidth;
+          }
+        //Head Collision
+        else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX
+        && m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
+        {
+          m_PlayerPosX = objectStartX - m_PlayerWidth;
+        }
+        //Body Collision (player midpoint, which is needed because the player can be taller than the platform)
+        else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX
+        && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY && m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY)
+        {
+          m_PlayerPosX = objectStartX - m_PlayerWidth;
+        }
+      break;
+      case PlayerMovement::Left:
+        //Foot Collision
+        if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
+          m_PlayerPosY + m_PlayerHeight < objectEndY && m_PlayerPosY + m_PlayerHeight > objectStartY)
+          {
+            m_PlayerPosX = objectEndX;
+          }
+        //Head Collision
+        else if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
+          m_PlayerPosY < objectEndY && m_PlayerPosY > objectStartY)
+          {
+            m_PlayerPosX = objectEndX;
+          }
+        //Body Collision
+        else if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
+          m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY)
+          {
+            m_PlayerPosX = objectEndX;
+          }
+      break;
+      case PlayerMovement::Up:
+        //Account for collisions on the player's upper right
+        if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
+          m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
+          {
+            m_PlayerPosY = objectEndY;
+          }
+        //Account for collisions on the player's upper left
+        else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
+          m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
+          {
+            m_PlayerPosY = objectEndY;
+          }
+      break;
+      case PlayerMovement::Down:
+        //Account for collsions on player's lower left
+        if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
+          m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
+          {
+            m_PlayerPosY = objectStartY - m_PlayerHeight;
+          }
+        //Account for collsions on player's lower right
+        else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
+          m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
+          {
+            m_PlayerPosY = objectStartY - m_PlayerHeight;
+          }
+      break;
+      case PlayerMovement::Still:
+      //Account for collsions on player's lower left
+      if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
+        m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
+        {
+          m_PlayerPosY = objectStartY - m_PlayerHeight;
+        }
+      //Account for collsions on player's lower right
+      else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
+        m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
+        {
+          m_PlayerPosY = objectStartY - m_PlayerHeight;
+        }
+      break;
+    }
+
+    //Determine if player is on ground or not.  m_OnGround is used/returned by the bool OnGround method
+    if(objectStartY - m_PlayerHeight == m_PlayerPosY && m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX)
+    {
+      m_OnGround = true;
+    }
+    else if(objectStartY - m_PlayerHeight == m_PlayerPosY && m_PlayerPosX + m_PlayerWidth < objectEndX&& m_PlayerPosX > objectStartX)
+    {
+      m_OnGround = true;
+    }
   }
+
+  SetPosition(m_PlayerPosX, m_PlayerPosY);
 }
+
+bool Player::OnGround()
+{
+  return m_OnGround;
+}
+//Commenting out because m_OnGround flag is set with collision checks, but not sure if new solution has bugs or not.
+// bool Player::GetOnGround(std::vector<sf::Vector2i> platformObjects)
+// {
+//   for(int i = 0; i < platformObjects.size(); ++i)
+//   {
+//     int objectWidth = 200; //This variable and objectHeight are specific to nectarine branch platform sprites
+//     int objectHeight = 75;  //I will likely need to rework things to fit other platform sizes (25x25 for example)
+//     int objectStartX = platformObjects[i].x;
+//     int objectEndX = platformObjects[i].x + objectWidth;
+//     int objectStartY = platformObjects[i].y;
+//     int objectEndY = platformObjects[i].y + objectHeight;
+//     if(objectStartY - m_PlayerHeight == m_PlayerPosY && m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX)
+//     {
+//       m_OnGround = true;
+//       return true;
+//     }
+//     else if(objectStartY - m_PlayerHeight == m_PlayerPosY && m_PlayerPosX + m_PlayerWidth < objectEndX&& m_PlayerPosX > objectStartX)
+//     {
+//       m_OnGround = true;
+//       return true;
+//     }
+//   }
+//   m_OnGround = false;
+//   return false;
+// }
 
 void Player::Draw(Window& l_window)
 {
