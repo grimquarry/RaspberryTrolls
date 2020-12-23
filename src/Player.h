@@ -57,6 +57,8 @@ protected:
 
 private:
   PlayerMovement m_CurrentMovement;
+  PlayerMovement m_PreviousMovement;
+  PlayerMovement m_StopXDirection;
   PlayerAction m_CurrentAction;
   float m_PlayerPosX;
   float m_PlayerPosY;
@@ -67,6 +69,10 @@ private:
 
   float m_Gravity;
   bool m_OnGround;
+  bool m_LeftCollision;
+  bool m_RightCollision;
   //bool m_IsColliding;
+
+  void ChangeXVelocity();
 
 };

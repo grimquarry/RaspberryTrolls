@@ -3,15 +3,19 @@
 Player::Player()
 {
   m_CurrentMovement = PlayerMovement::Still;
+  m_PreviousMovement = PlayerMovement::Still;
+  m_StopXDirection = PlayerMovement::Still;
   m_CurrentAction = PlayerAction::None;
   m_PlayerTexture.loadFromFile("../resources/images/BucketsTile.png");
   m_PlayerSprite.setTexture(m_PlayerTexture);
 
-  m_PlayerVelX = 5.f;
-  m_PlayerVelY = 5.f;
+  m_PlayerVelX = 0.0f;
+  m_PlayerVelY = 5.0f;
   m_Gravity = 5.f;
 
   m_OnGround = false;
+  m_LeftCollision = false;
+  m_RightCollision = false;
 }
 
 Player::~Player() { }
@@ -54,6 +58,7 @@ void Player::SetPosition(float x, float y)
 
 void Player::SetPlayerMovement(PlayerMovement movement)
 {
+  m_PreviousMovement = m_CurrentMovement;
   m_CurrentMovement = movement;
 }
 
@@ -72,10 +77,12 @@ void Player::MovePlayer(float timeElapsed)
   //Give player based on directive new position
   if(m_CurrentMovement == PlayerMovement::Right)
   {
+    ChangeXVelocity();
     m_PlayerPosX += (m_PlayerVelX * timeElapsed);
   }
   else if(m_CurrentMovement == PlayerMovement::Left)
   {
+    ChangeXVelocity();
     m_PlayerPosX -= (m_PlayerVelX * timeElapsed);
   }
   else if(m_CurrentMovement == PlayerMovement::Up)
@@ -88,6 +95,76 @@ void Player::MovePlayer(float timeElapsed)
   }
   else if (m_CurrentMovement == PlayerMovement::Still)
   {
+    if(m_PlayerVelX != 0.f && !m_LeftCollision && !m_RightCollision)
+    {
+      if(m_PreviousMovement == PlayerMovement::Left)
+      {
+        std::cout << "Stop Left" << std::endl;
+        m_StopXDirection = PlayerMovement::Left;
+      }
+      else if(m_PreviousMovement == PlayerMovement::Right)
+      {
+        std::cout << "Stop Right" << std::endl;
+        m_StopXDirection = PlayerMovement::Right;
+      }
+
+      m_PlayerVelX -= 0.5f;
+
+      if(m_StopXDirection == PlayerMovement::Left)
+      {
+        std::cout << "Left Triggered" << std::endl;
+        m_PlayerPosX -= m_PlayerVelX * timeElapsed;
+      }
+      else if(m_StopXDirection == PlayerMovement::Right)
+      {
+        std::cout << "Right Triggered" << std::endl;
+        m_PlayerPosX += m_PlayerVelX * timeElapsed;
+      }
+
+      // if(m_PlayerVelX > 10)
+      // {
+      //   m_PlayerVelX = 10;
+      // }
+      // if(m_PlayerVelX > 0)
+      // {
+      //   m_PlayerVelX = m_PlayerVelX - 1.0f;
+      //   m_PlayerPosX += m_PlayerVelX * timeElapsed;
+      // }
+      // else if(m_PlayerVelX < 0)
+      // {
+      //   m_PlayerVelX = m_PlayerVelX + 1.0f;
+      //   m_PlayerPosX += 10;
+      // }
+    }
+
+    // if(m_PlayerVelX > 0)
+    // {
+    //   m_PlayerVelX -= 1.0f;
+    //   m_PlayerPosX += m_PlayerVelX * timeElapsed;
+    // }
+    // else if(m_PlayerVelX < 0)
+    // {
+    //   m_PlayerVelX += 1.0f;
+    //   m_PlayerPosX += m_PlayerVelX * timeElapsed;
+    // }
+    // else
+    // {
+    //   m_PlayerVelX = 0;
+    //   //m_PlayerPosX += m_PlayerVelX * timeElapsed;
+    // }
+    // if(m_PlayerVelX != 0.0f)
+    // {
+    //   if(m_PlayerVelX - xAbValue == 0.0f)
+    //   {
+    //     ChangeXVelocity();
+    //     m_PlayerPosX -= m_PlayerVelX * timeElapsed;
+    //   }
+    //   else
+    //   {
+    //     ChangeXVelocity();
+    //     m_PlayerPosX += m_PlayerVelX * timeElapsed;
+    //   }
+    // }
 
   }
   //Put player in the new postion
@@ -102,6 +179,8 @@ void Player::Jump(float timeElapsed)
 void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
 {
   m_OnGround = false;
+  m_LeftCollision = false;
+  m_RightCollision = false;
   for(int i = 0; i < collidableObjects.size(); i++)
   {
     int objectWidth = 200; //This variable and objectHeight are specific to nectarine branch platform sprites
@@ -156,6 +235,7 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
         if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
           m_PlayerPosY + m_PlayerHeight < objectEndY && m_PlayerPosY + m_PlayerHeight > objectStartY)
           {
+            m_LeftCollision = true;
             m_PlayerPosX = objectEndX;
           }
         //Head Collision
@@ -224,6 +304,15 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
     {
       m_OnGround = true;
     }
+    //Determine if player is flush with a platfrom to his Left or Right
+    if(m_PlayerPosX == objectEndX)
+    {
+      m_LeftCollision = true;
+    }
+    else if(m_PlayerPosX + m_PlayerWidth == objectStartX)
+    {
+      m_RightCollision = true;
+    }
   }
 
   SetPosition(m_PlayerPosX, m_PlayerPosY);
@@ -264,4 +353,13 @@ void Player::Draw(Window& l_window)
   int index = (int)GetPlayerMovement();
   m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
   l_window.Draw(m_PlayerSprite);
+}
+
+void Player::ChangeXVelocity()
+{
+  m_PlayerVelX += 0.5f;
+  if(m_PlayerVelX > 6)
+  {
+    m_PlayerVelX = 6;
+  }
 }
