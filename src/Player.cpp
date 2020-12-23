@@ -99,12 +99,10 @@ void Player::MovePlayer(float timeElapsed)
     {
       if(m_PreviousMovement == PlayerMovement::Left)
       {
-        std::cout << "Stop Left" << std::endl;
         m_StopXDirection = PlayerMovement::Left;
       }
       else if(m_PreviousMovement == PlayerMovement::Right)
       {
-        std::cout << "Stop Right" << std::endl;
         m_StopXDirection = PlayerMovement::Right;
       }
 
@@ -112,59 +110,18 @@ void Player::MovePlayer(float timeElapsed)
 
       if(m_StopXDirection == PlayerMovement::Left)
       {
-        std::cout << "Left Triggered" << std::endl;
         m_PlayerPosX -= m_PlayerVelX * timeElapsed;
       }
       else if(m_StopXDirection == PlayerMovement::Right)
       {
-        std::cout << "Right Triggered" << std::endl;
         m_PlayerPosX += m_PlayerVelX * timeElapsed;
       }
+      else if(m_LeftCollision || m_RightCollision)
+      {
+        m_PlayerVelX = 0;
+      }
 
-      // if(m_PlayerVelX > 10)
-      // {
-      //   m_PlayerVelX = 10;
-      // }
-      // if(m_PlayerVelX > 0)
-      // {
-      //   m_PlayerVelX = m_PlayerVelX - 1.0f;
-      //   m_PlayerPosX += m_PlayerVelX * timeElapsed;
-      // }
-      // else if(m_PlayerVelX < 0)
-      // {
-      //   m_PlayerVelX = m_PlayerVelX + 1.0f;
-      //   m_PlayerPosX += 10;
-      // }
     }
-
-    // if(m_PlayerVelX > 0)
-    // {
-    //   m_PlayerVelX -= 1.0f;
-    //   m_PlayerPosX += m_PlayerVelX * timeElapsed;
-    // }
-    // else if(m_PlayerVelX < 0)
-    // {
-    //   m_PlayerVelX += 1.0f;
-    //   m_PlayerPosX += m_PlayerVelX * timeElapsed;
-    // }
-    // else
-    // {
-    //   m_PlayerVelX = 0;
-    //   //m_PlayerPosX += m_PlayerVelX * timeElapsed;
-    // }
-    // if(m_PlayerVelX != 0.0f)
-    // {
-    //   if(m_PlayerVelX - xAbValue == 0.0f)
-    //   {
-    //     ChangeXVelocity();
-    //     m_PlayerPosX -= m_PlayerVelX * timeElapsed;
-    //   }
-    //   else
-    //   {
-    //     ChangeXVelocity();
-    //     m_PlayerPosX += m_PlayerVelX * timeElapsed;
-    //   }
-    // }
 
   }
   //Put player in the new postion
