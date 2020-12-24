@@ -69,7 +69,12 @@ PlayerMovement Player::GetPlayerMovement()
 
 void Player::SetPlayerAction(PlayerAction action)
 {
-  m_CurrentAction = action;
+  m_ActionsBuffer.push_back(action);
+  //m_CurrentAction = action;
+}
+void Player::ClearPlayerActions()
+{
+  m_ActionsBuffer.clear();
 }
 
 void Player::MovePlayer(float timeElapsed)
@@ -90,7 +95,7 @@ void Player::MovePlayer(float timeElapsed)
     if(m_PreviousMovement != PlayerMovement::Left)
     {
       m_PlayerSprite.setScale({-1, 1});
-      m_PlayerSprite.setOrigin((float)m_PlayerWidth, 0.0f);
+      m_PlayerSprite.setOrigin((float)m_PlayerWidth, 0.0f); //Change origin for smoother animation when changing direction from right to left.
     }
     ChangeXVelocity();
     m_PlayerPosX -= (m_PlayerVelX * timeElapsed);
@@ -158,20 +163,26 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
     int objectEndY = collidableObjects[i].y + objectHeight;
 
     //Using if instead of switch because there can be more than one action.
-    if(m_CurrentAction == PlayerAction::Jump)
+    if(!m_ActionsBuffer.empty())
     {
-      //std::cout << "Triggered" << std::endl;
-      if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
-        m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
+      for(int i = 0; i < m_ActionsBuffer.size(); ++i)
+      {
+        if(m_ActionsBuffer[i] == PlayerAction::Jump)
         {
-          m_PlayerPosY = objectEndY;
+          //std::cout << "Triggered" << std::endl;
+          if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
+            m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
+            {
+              m_PlayerPosY = objectEndY;
+            }
+          //Account for collisions on the player's upper left
+          else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
+            m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
+            {
+              m_PlayerPosY = objectEndY;
+            }
         }
-      //Account for collisions on the player's upper left
-      else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
-        m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
-        {
-          m_PlayerPosY = objectEndY;
-        }
+      }
     }
 
     switch(m_CurrentMovement){

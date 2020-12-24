@@ -2,6 +2,7 @@
 #include <SFML/Window/Joystick.hpp> //Dynamically Linked (SFML Libraries must be discoverable in your $PATH)
 #include <SFML/Graphics.hpp> //Dynamically Linked (SFML Libraries must be discoverable in your $PATH)
 #include <iostream>
+#include <vector>
 #include "GameState.h"
 #include "Controller.h"
 
@@ -37,7 +38,8 @@ public:
   GameState GetState() const;
   std::string GetMenuDirection() const;
   std::string GetPlayerDirective() const;
-  std::string GetPlayerAction() const;
+  // std::string GetPlayerAction() const;
+  std::vector<std::string> GetPlayerActions() const;
 
 
   void SetControllers();
@@ -59,6 +61,6 @@ private:
 
   std::string m_PlayerMoveDirective;
   std::string m_PreviousMoveDirective; //Keep track of last directive for keyboard press logic
-  std::string m_PlayerActionDirective; //I should create vector buffer for action directives as more than one can happen at a timeElapsed
-                                      //For example, you can attack and jump at the same time.
+  //std::string m_PlayerActionDirective;
+  std::vector<std::string> m_ActionDirectives;
 };

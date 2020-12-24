@@ -36,6 +36,7 @@ public:
   PlayerMovement GetPlayerMovement();
 
   void SetPlayerAction(PlayerAction action);
+  void ClearPlayerActions();
 
   void MovePlayer(float timeElapsed);
 
@@ -71,6 +72,7 @@ private:
   bool m_OnGround;
   bool m_LeftCollision;
   bool m_RightCollision;
+  std::vector<PlayerAction> m_ActionsBuffer;
   //bool m_IsColliding;
 
   void ChangeXVelocity();

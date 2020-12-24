@@ -26,25 +26,35 @@ void EventManager::HandleEvent(sf::Event& l_event)
   switch(sfmlEvent)
   {
     case(EventType::JoystickButtonPressed):
-      if(m_state == GameState::Title)
+      if(m_state == GameState::GamePlay)
       {
         if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Run")))
         {
+          m_ActionDirectives.push_back("Run");
+          //m_PlayerActionDirective = "Run";
           std::cout << "Run button was pressed" << std::endl;
         }
-        else if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Jump")))
+        if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Jump")))
         {
+          m_ActionDirectives.push_back("Jump");
           std::cout << "Jump button was pressed" << std::endl;
         }
-        else if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Attack")))
+        if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Attack")))
         {
           std::cout << "Attack button was pressed" << std::endl;
         }
-        else if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Select")))
+        if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Select")))
         {
           std::cout << "Select button was pressed" << std::endl;
         }
-        else if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Start")))
+        if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Start")))
+        {
+          std::cout << "Start button was pressed" << std::endl;
+        }
+      }
+      else if(m_state == GameState::Title)
+      {
+        if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Start")))
         {
           std::cout << "Start button was pressed" << std::endl;
           m_menuItemSelected = true;
@@ -59,11 +69,11 @@ void EventManager::HandleEvent(sf::Event& l_event)
       {
         m_quitGame = true;
       }
-      if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-      {
-        m_changeState = true;
-        m_state = GameState::GamePlay;
-      }
+      // if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+      // {
+      //   m_changeState = true;
+      //   m_state = GameState::GamePlay;
+      // }
       if(m_state == GameState::GamePlay)
       {
         //This serires of conditional statements first checks to see if a key is pressed.  If it is, it then checks to see if the player is already moving in that direction.
@@ -94,24 +104,33 @@ void EventManager::HandleEvent(sf::Event& l_event)
           m_PlayerMoveDirective = "Up";
         }
 
+        m_ActionDirectives.clear();
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
         {
-          if(m_PlayerActionDirective != "Jump")
-          {
-            m_PlayerActionDirective = "Jump";
-          }
-
+          // if(m_PlayerActionDirective != "Jump")
+          // {
+          //   m_ActionDirectives.push_back("Jump");
+          //   m_PlayerActionDirective = "Jump";
+          // }
+          m_ActionDirectives.push_back("Jump");
+          //m_PlayerActionDirective = "Jump";
+        }
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        {
+          m_ActionDirectives.push_back("Run");
+          //m_PlayerActionDirective = "Run";
         }
       }
     break;
     case(EventType::KeyReleased):
       switch (l_event.key.code)
       {
-        case sf::Keyboard::Space:
-          if(m_state == GameState::GamePlay)
-          {
-            m_PlayerActionDirective = "None";
-          }
+        // case sf::Keyboard::Space:
+        //   if(m_state == GameState::GamePlay)
+        //   {
+        //     m_PlayerActionDirective = "None";
+        //   }
+        //   break;
         case sf::Keyboard::Up:
           if(m_state == GameState::Title || m_state == GameState::Options) // might need to add the paused games stat here, too
           {
@@ -216,6 +235,7 @@ void EventManager::HandleEvent(sf::Event& l_event)
       break;
 
   }
+  //std::cout << m_ActionDirectives.size() << std::endl;
 }
 
 void EventManager::Update()
@@ -239,8 +259,8 @@ GameState EventManager::GetState() const { return m_state; }
 std::string EventManager::GetMenuDirection() const { return m_menuDirection; }
 
 std::string EventManager::GetPlayerDirective() const { return m_PlayerMoveDirective; }
-std::string EventManager::GetPlayerAction() const { return m_PlayerActionDirective; }
-
+//std::string EventManager::GetPlayerAction() const { return m_PlayerActionDirective; }
+std::vector<std::string> EventManager::GetPlayerActions() const { return m_ActionDirectives; };
 void EventManager::SetControllers()
 {
   for(int i = 0; i < sf::Joystick::Count; ++i)

@@ -179,15 +179,34 @@ void Game::Update()
     m_Player1.MovePlayer(fTimeElapsed);
 
     //Get Player action.  Actions should probably be put in a buffer as more than 1 can be executed.
-    if(m_window.GetPlayerAction() == "Jump")
+    m_PlayerActions.clear();
+    m_Player1.ClearPlayerActions();
+    m_PlayerActions = m_window.GetPlayerActions();
+    if(!m_PlayerActions.empty())
     {
-      m_Player1.SetPlayerAction(PlayerAction::Jump);
-      m_Player1.Jump(fTimeElapsed);
+      //std::cout << "This ran" << std::endl;
+      for(int i = 0; i < m_PlayerActions.size(); ++i)
+      {
+        if(m_PlayerActions[i] == "Jump")
+        {
+          m_Player1.SetPlayerAction(PlayerAction::Jump);
+          m_Player1.Jump(fTimeElapsed);
+        }
+      }
     }
-    else if(m_window.GetPlayerAction() == "None")
+    else
     {
       m_Player1.SetPlayerAction(PlayerAction::None);
     }
+    // if(m_window.GetPlayerAction() == "Jump")
+    // {
+    //   m_Player1.SetPlayerAction(PlayerAction::Jump);
+    //   m_Player1.Jump(fTimeElapsed);
+    // }
+    // else if(m_window.GetPlayerAction() == "None")
+    // {
+    //   m_Player1.SetPlayerAction(PlayerAction::None);
+    // }
 
     //Now that all movements are accounted for, check for collisions
     m_Player1.CollisionCheck(m_LevelManager.GetVisiblePlatforms());

@@ -51,4 +51,6 @@ private:
   float m_playerStartPositionX;
   float m_playerStartPositionY;
 
+  std::vector<std::string> m_PlayerActions;
+
 };
