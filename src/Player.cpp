@@ -77,11 +77,21 @@ void Player::MovePlayer(float timeElapsed)
   //Give player based on directive new position
   if(m_CurrentMovement == PlayerMovement::Right)
   {
+    if(m_PreviousMovement != PlayerMovement::Right)
+    {
+      m_PlayerSprite.setScale({1, 1});
+      m_PlayerSprite.setOrigin(0.f, 0.f);
+    }
     ChangeXVelocity();
     m_PlayerPosX += (m_PlayerVelX * timeElapsed);
   }
   else if(m_CurrentMovement == PlayerMovement::Left)
   {
+    if(m_PreviousMovement != PlayerMovement::Left)
+    {
+      m_PlayerSprite.setScale({-1, 1});
+      m_PlayerSprite.setOrigin((float)m_PlayerWidth, 0.0f);
+    }
     ChangeXVelocity();
     m_PlayerPosX -= (m_PlayerVelX * timeElapsed);
   }
