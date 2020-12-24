@@ -30,7 +30,8 @@ public:
   bool MenuItemSelected() const;
 
   std::string GetPlayerDirective() const;
-  std::string GetPlayerAction() const;
+  //std::string GetPlayerAction() const;
+  std::vector<std::string> GetPlayerActions() const;
 
 private:
   sf::RenderWindow m_window;
@@ -40,6 +41,7 @@ private:
   GameState m_state;
   std::string m_menuDirection;
   std::string m_PlayerDirective;
-  std::string m_PlayerAction;
+  //std::string m_PlayerAction;
+  std::vector<std::string> m_PlayerActions;
 
 };
