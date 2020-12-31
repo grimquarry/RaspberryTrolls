@@ -6,7 +6,7 @@ Player::Player()
   m_PreviousMovement = PlayerMovement::Still;
   m_StopXDirection = PlayerMovement::Still;
   m_CurrentAction = PlayerAction::None;
-  m_PlayerTexture.loadFromFile("../resources/images/BucketsTile.png");
+  m_PlayerTexture.loadFromFile("../resources/images/BucketsMovement_0.png");
   m_PlayerSprite.setTexture(m_PlayerTexture);
 
   m_PlayerVelX = 0.0f;

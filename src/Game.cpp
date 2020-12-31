@@ -19,7 +19,7 @@ Game::Game()
   m_optionsMenu.SetOptions(m_optionsSelectBuffer);
   m_optionsMenuIndex = 0;
 
-  m_Player1.AddAnimTexture("../resources/images/BucketsTile.png");
+  m_Player1.AddAnimTexture("../resources/images/BucketsMovement_0.png");
   m_playerStartPositionX = ((float)m_window.GetSize().x / 2) - (m_Player1.GetPlayerWidth() / 2);
   m_playerStartPositionY = ((float)m_window.GetSize().y / 2) - (m_Player1.GetPlayerHeight() / 2);
 
