@@ -16,6 +16,10 @@ Player::Player()
   m_OnGround = false;
   m_LeftCollision = false;
   m_RightCollision = false;
+  m_IsRunning = false;
+
+  m_MinXVelocity = 6;
+  m_MaxXVelocity = m_MinXVelocity;
 }
 
 Player::~Player() { }
@@ -79,6 +83,39 @@ void Player::ClearPlayerActions()
 
 void Player::MovePlayer(float timeElapsed)
 {
+  //Account for player actions before they move
+  if(!m_ActionsBuffer.empty())
+  {
+    for(int i = 0; i < m_ActionsBuffer.size(); ++i)
+    {
+      std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
+      if(m_ActionsBuffer[i] == PlayerAction::Run)
+      {
+        m_IsRunning = true;
+      }
+      else if(m_ActionsBuffer[i] == PlayerAction::Walk)
+      {
+        m_IsRunning = false;
+      }
+    }
+  }
+
+  if(m_IsRunning)
+  {
+    m_MaxXVelocity = 10.0f;
+  }
+  else if(!m_IsRunning)
+  {
+    if(m_MaxXVelocity > m_MaxXVelocity)
+    {
+      m_MaxXVelocity -= .5f;
+    }
+    else
+    {
+      m_MaxXVelocity = m_MinXVelocity;
+    }
+  }
+
   //Give player based on directive new position
   if(m_CurrentMovement == PlayerMovement::Right)
   {
@@ -193,19 +230,25 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
         if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX
           && m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
           {
+            //m_RightCollision = true;
             m_PlayerPosX = objectStartX - m_PlayerWidth;
+            m_MaxXVelocity = m_MinXVelocity;
           }
         //Head Collision
         else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX
         && m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
         {
+          //m_RightCollision = true;
           m_PlayerPosX = objectStartX - m_PlayerWidth;
+          m_MaxXVelocity = m_MinXVelocity;
         }
         //Body Collision (player midpoint, which is needed because the player can be taller than the platform)
         else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX
         && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY && m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY)
         {
+          //m_RightCollision = true;
           m_PlayerPosX = objectStartX - m_PlayerWidth;
+          m_MaxXVelocity = m_MinXVelocity;
         }
       break;
       case PlayerMovement::Left:
@@ -213,20 +256,25 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
         if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
           m_PlayerPosY + m_PlayerHeight < objectEndY && m_PlayerPosY + m_PlayerHeight > objectStartY)
           {
-            m_LeftCollision = true;
+            //m_LeftCollision = true;
             m_PlayerPosX = objectEndX;
+            m_MaxXVelocity = m_MinXVelocity;
           }
         //Head Collision
         else if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
           m_PlayerPosY < objectEndY && m_PlayerPosY > objectStartY)
           {
+            //m_LeftCollision = true;
             m_PlayerPosX = objectEndX;
+            m_MaxXVelocity = m_MinXVelocity;
           }
         //Body Collision
         else if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
           m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY)
           {
+            //m_LeftCollision = true;
             m_PlayerPosX = objectEndX;
+            m_MaxXVelocity = m_MinXVelocity;
           }
       break;
       case PlayerMovement::Up:
@@ -258,17 +306,53 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
           }
       break;
       case PlayerMovement::Still:
-      //Account for collsions on player's lower left
-      if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
-        m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
+      //The code for this below was lifted from both the PlayerMovement::Right and PlayerMovement::Left cases above.
+      //Probably not the most eloquent solution, but it's necessary because the player can still be moving
+      //when they're "standing still" (due to changing velocity to give the effect of player momentum).  I suspect
+      //this could be refactored to be more effecient, but don't currently have good ideas on that, so
+      //I'll leave as is for now, and maybe revisit.
+      //Left Foot Collision
+      if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
+        m_PlayerPosY + m_PlayerHeight < objectEndY && m_PlayerPosY + m_PlayerHeight > objectStartY)
         {
-          m_PlayerPosY = objectStartY - m_PlayerHeight;
+          m_PlayerPosX = objectEndX;
+          m_MaxXVelocity = m_MinXVelocity;
         }
-      //Account for collsions on player's lower right
-      else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
-        m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
+      //Left Head Collision
+      else if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
+        m_PlayerPosY < objectEndY && m_PlayerPosY > objectStartY)
         {
-          m_PlayerPosY = objectStartY - m_PlayerHeight;
+          m_PlayerPosX = objectEndX;
+          m_MaxXVelocity = m_MinXVelocity;
+        }
+      //Left Body Collision
+      else if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
+        m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY)
+        {
+          m_PlayerPosX = objectEndX;
+          m_MaxXVelocity = m_MinXVelocity;
+        }
+
+        //Right Foot Collision
+        if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX
+          && m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
+          {
+            m_PlayerPosX = objectStartX - m_PlayerWidth;
+            m_MaxXVelocity = m_MinXVelocity;
+          }
+        //Right Head Collision
+        else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX
+        && m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
+        {
+          m_PlayerPosX = objectStartX - m_PlayerWidth;
+          m_MaxXVelocity = m_MinXVelocity;
+        }
+        //Right Body Collision (player midpoint, which is needed because the player can be taller than the platform)
+        else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX
+        && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY && m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY)
+        {
+          m_PlayerPosX = objectStartX - m_PlayerWidth;
+          m_MaxXVelocity = m_MinXVelocity;
         }
       break;
     }
@@ -282,7 +366,7 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
     {
       m_OnGround = true;
     }
-    //Determine if player is flush with a platfrom to his Left or Right
+    //Determine if player is flush with a platfrom to his Left or Right.
     if(m_PlayerPosX == objectEndX)
     {
       m_LeftCollision = true;
@@ -336,8 +420,8 @@ void Player::Draw(Window& l_window)
 void Player::ChangeXVelocity()
 {
   m_PlayerVelX += 0.5f;
-  if(m_PlayerVelX > 6)
+  if(m_PlayerVelX > m_MaxXVelocity)
   {
-    m_PlayerVelX = 6;
+    m_PlayerVelX = m_MaxXVelocity;
   }
 }

@@ -61,6 +61,15 @@ void EventManager::HandleEvent(sf::Event& l_event)
         }
       }
     break;
+    case(EventType::JoystickButtonReleased):
+      if(m_state == GameState::GamePlay)
+      {
+        if(!sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Run")))
+        {
+          m_ActionDirectives.push_back("Walk");
+        }
+      }
+    break;
     case(EventType::Closed):
       m_quitGame = true;
     break;
@@ -131,6 +140,9 @@ void EventManager::HandleEvent(sf::Event& l_event)
         //     m_PlayerActionDirective = "None";
         //   }
         //   break;
+        case sf::Keyboard::Key::A:
+          m_ActionDirectives.push_back("Walk");
+        break;
         case sf::Keyboard::Up:
           if(m_state == GameState::Title || m_state == GameState::Options) // might need to add the paused games stat here, too
           {

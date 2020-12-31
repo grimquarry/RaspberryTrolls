@@ -14,7 +14,7 @@ enum class PlayerMovement
 
 enum class PlayerAction
 {
-  Jump, Attack, Run, None
+  Jump, Attack, Run, Walk, None
 };
 
 class Player
@@ -70,11 +70,14 @@ private:
 
   float m_Gravity;
   bool m_OnGround;
+  bool m_IsRunning;
   bool m_LeftCollision;
   bool m_RightCollision;
   std::vector<PlayerAction> m_ActionsBuffer;
   //bool m_IsColliding;
 
   void ChangeXVelocity();
+  float m_MaxXVelocity;
+  float m_MinXVelocity;
 
 };

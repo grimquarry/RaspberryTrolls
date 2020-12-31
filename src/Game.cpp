@@ -192,6 +192,14 @@ void Game::Update()
           m_Player1.SetPlayerAction(PlayerAction::Jump);
           m_Player1.Jump(fTimeElapsed);
         }
+        else if(m_PlayerActions[i] == "Run")
+        {
+          m_Player1.SetPlayerAction(PlayerAction::Run);
+        }
+        else if(m_PlayerActions[i] == "Walk")
+        {
+          m_Player1.SetPlayerAction(PlayerAction::Walk);
+        }
       }
     }
     else
