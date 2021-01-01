@@ -134,12 +134,12 @@ void EventManager::HandleEvent(sf::Event& l_event)
     case(EventType::KeyReleased):
       switch (l_event.key.code)
       {
-        // case sf::Keyboard::Space:
-        //   if(m_state == GameState::GamePlay)
-        //   {
-        //     m_PlayerActionDirective = "None";
-        //   }
-        //   break;
+        case sf::Keyboard::Space:
+          if(m_state == GameState::GamePlay)
+          {
+            m_ActionDirectives.push_back("Land");
+          }
+          break;
         case sf::Keyboard::Key::A:
           m_ActionDirectives.push_back("Walk");
         break;

@@ -190,7 +190,11 @@ void Game::Update()
         if(m_PlayerActions[i] == "Jump")
         {
           m_Player1.SetPlayerAction(PlayerAction::Jump);
-          m_Player1.Jump(fTimeElapsed);
+          //m_Player1.Jump(fTimeElapsed);
+        }
+        else if(m_PlayerActions[i] == "Land")
+        {
+          m_Player1.SetPlayerAction(PlayerAction::Land);
         }
         else if(m_PlayerActions[i] == "Run")
         {

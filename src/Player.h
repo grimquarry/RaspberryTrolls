@@ -14,7 +14,7 @@ enum class PlayerMovement
 
 enum class PlayerAction
 {
-  Jump, Attack, Run, Walk, None
+  Jump, Land, Attack, Run, Walk, None
 };
 
 class Player
@@ -40,7 +40,7 @@ public:
 
   void MovePlayer(float timeElapsed);
 
-  void Jump(float timeElapsed);
+  //void Jump(float timeElapsed);
 
   void CollisionCheck(std::vector<sf::Vector2i> collidableObjects);
 
@@ -68,9 +68,10 @@ private:
   float m_PlayerWidth;
   float m_PlayerHeight;
 
-  float m_Gravity;
   bool m_OnGround;
   bool m_IsRunning;
+  bool m_IsJumping;
+  bool m_IsLanding;
   bool m_LeftCollision;
   bool m_RightCollision;
   std::vector<PlayerAction> m_ActionsBuffer;
@@ -79,5 +80,7 @@ private:
   void ChangeXVelocity();
   float m_MaxXVelocity;
   float m_MinXVelocity;
+  float m_MaxYVelocity;
+  float m_MinYVelocity;
 
 };

@@ -11,15 +11,18 @@ Player::Player()
 
   m_PlayerVelX = 0.0f;
   m_PlayerVelY = 5.0f;
-  m_Gravity = 5.f;
 
   m_OnGround = false;
   m_LeftCollision = false;
   m_RightCollision = false;
   m_IsRunning = false;
+  m_IsJumping = false;
+  m_IsLanding = false;
 
   m_MinXVelocity = 6;
   m_MaxXVelocity = m_MinXVelocity;
+  m_MinYVelocity = 3.0f;
+  m_MaxYVelocity = 7.0f;
 }
 
 Player::~Player() { }
@@ -88,7 +91,7 @@ void Player::MovePlayer(float timeElapsed)
   {
     for(int i = 0; i < m_ActionsBuffer.size(); ++i)
     {
-      std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
+      //std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
       if(m_ActionsBuffer[i] == PlayerAction::Run)
       {
         m_IsRunning = true;
@@ -97,8 +100,37 @@ void Player::MovePlayer(float timeElapsed)
       {
         m_IsRunning = false;
       }
+
+      if(m_ActionsBuffer[i] == PlayerAction::Jump)
+      {
+        m_IsJumping = true;
+      }
+      if(m_ActionsBuffer[i] == PlayerAction::Land)
+      {
+        m_IsLanding = true;
+      }
     }
   }
+
+  if(m_IsJumping)
+  {
+    if(m_OnGround)
+    {
+      m_PlayerVelY = -1 * m_MaxYVelocity;
+    }
+    else if(!m_OnGround)
+    {
+      m_PlayerVelY += 0.20f;
+    }
+    if(m_OnGround && m_IsLanding)
+    {
+      m_PlayerVelY = m_MinYVelocity;
+      m_IsJumping = false;
+      m_IsLanding = false;
+    }
+    m_PlayerPosY += (m_PlayerVelY * timeElapsed);
+  }
+
 
   if(m_IsRunning)
   {
@@ -147,6 +179,19 @@ void Player::MovePlayer(float timeElapsed)
   }
   else if (m_CurrentMovement == PlayerMovement::Still)
   {
+    //!!!!!!!!!!!!!!Logic for this needs fixing, I think by adding m_IsLanding conditions!!!!!!!!!!!!!!!!!!!!!!!
+    if(m_IsJumping)
+    {
+      if(m_StopXDirection == PlayerMovement::Right)
+      {
+        std::cout << "Ran" << std::endl;
+        m_PlayerPosX += m_PlayerVelX * timeElapsed;
+      }
+      if(m_StopXDirection == PlayerMovement::Left)
+      {
+        m_PlayerPosX -= m_PlayerVelX * timeElapsed;
+      }
+    }
     if(m_PlayerVelX != 0.f && !m_LeftCollision && !m_RightCollision)
     {
       if(m_PreviousMovement == PlayerMovement::Left)
@@ -172,18 +217,16 @@ void Player::MovePlayer(float timeElapsed)
       {
         m_PlayerVelX = 0;
       }
-
     }
-
   }
   //Put player in the new postion
   SetPosition(m_PlayerPosX, m_PlayerPosY);
 }
 
-void Player::Jump(float timeElapsed)
-{
-  m_PlayerPosY -= 10.f;
-}
+// void Player::Jump(float timeElapsed)
+// {
+//   m_PlayerPosY -= 10.f;
+// }
 
 void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
 {
@@ -204,21 +247,30 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
     {
       for(int i = 0; i < m_ActionsBuffer.size(); ++i)
       {
-        if(m_ActionsBuffer[i] == PlayerAction::Jump)
-        {
-          //std::cout << "Triggered" << std::endl;
-          if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
-            m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
-            {
-              m_PlayerPosY = objectEndY;
-            }
-          //Account for collisions on the player's upper left
-          else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
-            m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
-            {
-              m_PlayerPosY = objectEndY;
-            }
-        }
+        //Account for collsions on player's lower left
+        if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
+          m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
+          {
+            m_PlayerPosY = objectStartY - m_PlayerHeight;
+          }
+        //Account for collsions on player's lower right
+        else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
+          m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
+          {
+            m_PlayerPosY = objectStartY - m_PlayerHeight;
+          }
+        //Account for collisions on the player's upper right
+        else if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
+          m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
+          {
+            m_PlayerPosY = objectEndY;
+          }
+        //Account for collisions on the player's upper left
+        else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
+          m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
+          {
+            m_PlayerPosY = objectEndY;
+          }
       }
     }
 
