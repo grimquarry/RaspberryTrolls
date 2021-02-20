@@ -85,6 +85,9 @@ void EventManager::HandleEvent(sf::Event& l_event)
       // }
       if(m_state == GameState::GamePlay)
       {
+        //Start with a fresh actions buffer
+        m_ActionDirectives.clear();
+
         //This serires of conditional statements first checks to see if a key is pressed.  If it is, it then checks to see if the player is already moving in that direction.
         //If the player is already going in the direction, the conditional is passed over and the program is essentially waiting for that key to be lifted to stop the Player
         //from moving in that direction.  To account for the fact people will sometimes press another direction before they lift the key of the previous direction the m_PreviousMoveDirective
@@ -96,11 +99,13 @@ void EventManager::HandleEvent(sf::Event& l_event)
         {
           m_PreviousMoveDirective = m_PlayerMoveDirective;
           m_PlayerMoveDirective = "Right";
+          m_ActionDirectives.push_back("Walk");
         }
         else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && m_PlayerMoveDirective != "Left" && m_PreviousMoveDirective != "Left")
         {
           m_PreviousMoveDirective = m_PlayerMoveDirective;
           m_PlayerMoveDirective = "Left";
+          m_ActionDirectives.push_back("Walk");
         }
         else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && m_PlayerMoveDirective != "Down" && m_PreviousMoveDirective != "Down")
         {
@@ -113,7 +118,6 @@ void EventManager::HandleEvent(sf::Event& l_event)
           m_PlayerMoveDirective = "Up";
         }
 
-        m_ActionDirectives.clear();
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
         {
           // if(m_PlayerActionDirective != "Jump")

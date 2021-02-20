@@ -19,7 +19,15 @@ Game::Game()
   m_optionsMenu.SetOptions(m_optionsSelectBuffer);
   m_optionsMenuIndex = 0;
 
-  m_Player1.AddAnimTexture("../resources/images/BucketsMovement_0.png");
+  std::string pathToTexture;
+  for(int i = 0; i <= 13; i++)
+  {
+    pathToTexture = "../resources/images/BucketsMovement_" + std::to_string(i) + ".png";
+    std::cout << pathToTexture << std::endl;
+    m_Player1.AddAnimTexture(pathToTexture);
+  }
+  //m_Player1.AddAnimTexture("../resources/images/BucketsMovement_0.png");
+  m_Player1.HandleAnimTexture();
   m_playerStartPositionX = ((float)m_window.GetSize().x / 2) - (m_Player1.GetPlayerWidth() / 2);
   m_playerStartPositionY = ((float)m_window.GetSize().y / 2) - (m_Player1.GetPlayerHeight() / 2);
 

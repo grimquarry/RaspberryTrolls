@@ -24,6 +24,7 @@ public:
   ~Player();
 
   void AddAnimTexture(std::string txtrLocation);
+  void HandleAnimTexture();
 
   float GetPlayerWidth();
   float GetPlayerHeight();
@@ -83,4 +84,6 @@ private:
   float m_MaxYVelocity;
   float m_MinYVelocity;
 
+  int m_WalkAnimItr;
+  int m_FrameCount; 
 };

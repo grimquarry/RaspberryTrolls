@@ -6,8 +6,12 @@ Player::Player()
   m_PreviousMovement = PlayerMovement::Still;
   m_StopXDirection = PlayerMovement::Still;
   m_CurrentAction = PlayerAction::None;
-  m_PlayerTexture.loadFromFile("../resources/images/BucketsMovement_0.png");
-  m_PlayerSprite.setTexture(m_PlayerTexture);
+
+  //m_PlayerTexture and m_PlayerSprite are commented out because this is now
+  //handled in the Game class construtor using the AddAnimTexture and
+  //HandleAnimTexture Player class methods.  Keeping for reference, but can remove later.
+  // m_PlayerTexture.loadFromFile("../resources/images/BucketsMovement_0.png");
+  // m_PlayerSprite.setTexture(m_PlayerTexture);
 
   m_PlayerVelX = 0.0f;
   m_PlayerVelY = 5.0f;
@@ -23,6 +27,13 @@ Player::Player()
   m_MaxXVelocity = m_MinXVelocity;
   m_MinYVelocity = 3.0f;
   m_MaxYVelocity = 7.0f;
+
+  //Walk and Run Player Action animation iterates through the m_TxtrAnimBuff
+  //(Texture Animation Buffer).  Index 0 is for No action and indexes 1 - 13
+  //are for walking and running.  We set the iterator to 1 because that's the
+  //first frame in the animation series.
+  m_WalkAnimItr = 1;
+  m_FrameCount = 0;
 }
 
 Player::~Player() { }
@@ -56,6 +67,78 @@ void Player::AddAnimTexture(std::string txtrLocation)
   }
 }
 
+void Player::HandleAnimTexture()
+{
+  if(!m_ActionsBuffer.empty())
+  {
+    for(int i = 0; i < m_ActionsBuffer.size(); ++i)
+    {
+      std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
+      if(m_ActionsBuffer[i] == PlayerAction::Walk && m_CurrentMovement == PlayerMovement::Right || m_CurrentMovement == PlayerMovement::Left)
+      {
+        m_CurrentAction = PlayerAction::Walk;
+      }
+      else if(m_ActionsBuffer[i] == PlayerAction::None && m_CurrentMovement == PlayerMovement::Still)
+      {
+        m_CurrentAction = PlayerAction::None;
+      }
+    }
+  }
+  // std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_CurrentAction) << std::endl;
+  // if(!m_ActionsBuffer.empty())
+  // {
+  //   for(int i = 0; i < m_ActionsBuffer.size(); ++i)
+  //   {
+  //     if(m_ActionsBuffer[i] == PlayerAction::None)
+  //     {
+  //       m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+  //     }
+  //     else if(m_ActionsBuffer[i] == PlayerAction::Walk)
+  //     {
+  //       if(m_WalkAnimItr < 1 || m_WalkAnimItr > 13)
+  //       {
+  //         m_WalkAnimItr = 1;
+  //       }
+  //       m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_WalkAnimItr]);
+  //       m_WalkAnimItr++;
+  //     }
+  //   }
+  // }
+
+  switch (m_CurrentAction){
+    case PlayerAction::None :
+      m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+    break;
+    case PlayerAction::Walk :
+      if(m_WalkAnimItr < 1 || m_WalkAnimItr > 13)
+      {
+        m_WalkAnimItr = 1;
+      }
+      m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_WalkAnimItr]);
+
+      m_FrameCount++;
+      if(m_FrameCount > 60)
+      {
+        m_FrameCount = 1;
+      }
+
+      if(m_FrameCount > 2 && m_FrameCount % 3 == 0 && m_IsRunning)
+      {
+        m_WalkAnimItr++;
+      }
+      else if(m_FrameCount > 4 && m_FrameCount % 5 == 0 && !m_IsRunning)
+      {
+        m_WalkAnimItr++;
+      }
+    break;
+  }
+  // if(m_CurrentAction == PlayerAction::None)
+  // {
+  //   m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+  // }
+
+}
+
 void Player::SetPosition(float x, float y)
 {
   m_PlayerPosX = x;
@@ -77,7 +160,10 @@ PlayerMovement Player::GetPlayerMovement()
 void Player::SetPlayerAction(PlayerAction action)
 {
   m_ActionsBuffer.push_back(action);
-  //m_CurrentAction = action;
+  if(action == PlayerAction::Walk)
+  {
+    m_CurrentAction = action;
+  }
 }
 void Player::ClearPlayerActions()
 {
@@ -465,7 +551,8 @@ bool Player::OnGround()
 void Player::Draw(Window& l_window)
 {
   int index = (int)GetPlayerMovement();
-  m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+  //m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+  HandleAnimTexture();
   l_window.Draw(m_PlayerSprite);
 }
 
