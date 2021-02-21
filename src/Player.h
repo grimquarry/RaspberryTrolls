@@ -61,7 +61,7 @@ private:
   PlayerMovement m_CurrentMovement;
   PlayerMovement m_PreviousMovement;
   PlayerMovement m_StopXDirection;
-  PlayerAction m_CurrentAction;
+  PlayerAction m_AnimationAction;
   float m_PlayerPosX;
   float m_PlayerPosY;
   float m_PlayerVelX;
@@ -71,6 +71,7 @@ private:
 
   bool m_OnGround;
   bool m_IsRunning;
+  bool m_IsWalking;
   bool m_IsJumping;
   bool m_IsLanding;
   bool m_LeftCollision;
@@ -85,5 +86,5 @@ private:
   float m_MinYVelocity;
 
   int m_WalkAnimItr;
-  int m_FrameCount; 
+  int m_FrameCount;
 };

@@ -204,12 +204,14 @@ void Game::Update()
         {
           m_Player1.SetPlayerAction(PlayerAction::Land);
         }
-        else if(m_PlayerActions[i] == "Run")
+        if(m_PlayerActions[i] == "Run")
         {
+          //std::cout << "Run pushed to player actions" << std::endl;
           m_Player1.SetPlayerAction(PlayerAction::Run);
         }
-        else if(m_PlayerActions[i] == "Walk")
+        if(m_PlayerActions[i] == "Walk")
         {
+          //std::cout << "Walk pushed to player actions" << std::endl;
           m_Player1.SetPlayerAction(PlayerAction::Walk);
         }
       }

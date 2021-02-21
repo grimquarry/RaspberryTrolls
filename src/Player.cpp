@@ -5,7 +5,7 @@ Player::Player()
   m_CurrentMovement = PlayerMovement::Still;
   m_PreviousMovement = PlayerMovement::Still;
   m_StopXDirection = PlayerMovement::Still;
-  m_CurrentAction = PlayerAction::None;
+  m_AnimationAction = PlayerAction::None;
 
   //m_PlayerTexture and m_PlayerSprite are commented out because this is now
   //handled in the Game class construtor using the AddAnimTexture and
@@ -20,6 +20,7 @@ Player::Player()
   m_LeftCollision = false;
   m_RightCollision = false;
   m_IsRunning = false;
+  m_IsWalking = false;
   m_IsJumping = false;
   m_IsLanding = false;
 
@@ -69,75 +70,173 @@ void Player::AddAnimTexture(std::string txtrLocation)
 
 void Player::HandleAnimTexture()
 {
-  if(!m_ActionsBuffer.empty())
+  if(m_IsWalking && m_IsRunning)
   {
-    for(int i = 0; i < m_ActionsBuffer.size(); ++i)
+    m_IsRunning = false;
+  }
+
+  std::cout << "_____________________________________________________________________" << std::endl;
+  for(int i = 0; i < m_ActionsBuffer.size(); ++i)
+  {
+    std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
+  }
+  std::cout << "_____________________________________________________________________" << std::endl;
+  if(m_CurrentMovement == PlayerMovement::Still)
+  {
+    m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+  }
+  else if(m_IsWalking || m_IsRunning)
+  {
+    if(m_WalkAnimItr < 1 || m_WalkAnimItr > 13)
     {
-      std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
-      if(m_ActionsBuffer[i] == PlayerAction::Walk && m_CurrentMovement == PlayerMovement::Right || m_CurrentMovement == PlayerMovement::Left)
-      {
-        m_CurrentAction = PlayerAction::Walk;
-      }
-      else if(m_ActionsBuffer[i] == PlayerAction::None && m_CurrentMovement == PlayerMovement::Still)
-      {
-        m_CurrentAction = PlayerAction::None;
-      }
+      m_WalkAnimItr = 1;
+    }
+    m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_WalkAnimItr]);
+
+    m_FrameCount++;
+    if(m_FrameCount > 60)
+    {
+      m_FrameCount = 1;
+    }
+
+    if(m_FrameCount > 2 && m_FrameCount % 3 == 0 && m_IsRunning)
+    {
+      m_WalkAnimItr++;
+    }
+    else if(m_FrameCount > 4 && m_FrameCount % 5 == 0 && !m_IsRunning)
+    {
+      m_WalkAnimItr++;
     }
   }
-  // std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_CurrentAction) << std::endl;
-  // if(!m_ActionsBuffer.empty())
-  // {
-  //   for(int i = 0; i < m_ActionsBuffer.size(); ++i)
-  //   {
-  //     if(m_ActionsBuffer[i] == PlayerAction::None)
-  //     {
-  //       m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
-  //     }
-  //     else if(m_ActionsBuffer[i] == PlayerAction::Walk)
-  //     {
-  //       if(m_WalkAnimItr < 1 || m_WalkAnimItr > 13)
-  //       {
-  //         m_WalkAnimItr = 1;
-  //       }
-  //       m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_WalkAnimItr]);
-  //       m_WalkAnimItr++;
-  //     }
-  //   }
-  // }
-
-  switch (m_CurrentAction){
-    case PlayerAction::None :
-      m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
-    break;
-    case PlayerAction::Walk :
-      if(m_WalkAnimItr < 1 || m_WalkAnimItr > 13)
-      {
-        m_WalkAnimItr = 1;
-      }
-      m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_WalkAnimItr]);
-
-      m_FrameCount++;
-      if(m_FrameCount > 60)
-      {
-        m_FrameCount = 1;
-      }
-
-      if(m_FrameCount > 2 && m_FrameCount % 3 == 0 && m_IsRunning)
-      {
-        m_WalkAnimItr++;
-      }
-      else if(m_FrameCount > 4 && m_FrameCount % 5 == 0 && !m_IsRunning)
-      {
-        m_WalkAnimItr++;
-      }
-    break;
-  }
-  // if(m_CurrentAction == PlayerAction::None)
-  // {
-  //   m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
-  // }
-
 }
+
+/****Commenting out this code because it's beastly and replaced above, but keeping for now in case it's needed for reference****/
+// void Player::HandleAnimTexture()
+// {
+//   if(!m_ActionsBuffer.empty())
+//   {
+//     bool b_checkActions = true;
+//     int itr = 0;
+//     while(b_checkActions)
+//     {
+//       if(itr > b_checkActions)
+//       {
+//         m_AnimationAction = PlayerAction::None;
+//         b_checkActions = false;
+//       }
+//       else if(m_ActionsBuffer[itr] == PlayerAction::Walk && m_CurrentMovement == PlayerMovement::Right ||
+//         m_ActionsBuffer[itr] == PlayerAction::Walk && m_CurrentMovement == PlayerMovement::Left)
+//       {
+//         m_AnimationAction = PlayerAction::Walk;
+//         b_checkActions = false;
+//       }
+//       else if(m_ActionsBuffer[itr] == PlayerAction::Run && m_CurrentMovement == PlayerMovement::Right ||
+//         m_ActionsBuffer[itr] == PlayerAction::Run && m_CurrentMovement == PlayerMovement::Left)
+//       {
+//         m_AnimationAction = PlayerAction::Run;
+//         b_checkActions = false;
+//       }
+//       itr++;
+//     }
+//
+//     // std::cout << "_____________________________________________________________________" << std::endl;
+//     // for(int i = 0; i < m_ActionsBuffer.size(); ++i)
+//     // {
+//     //   std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
+//     //   if(m_ActionsBuffer[i] == PlayerAction::Walk && m_CurrentMovement == PlayerMovement::Right ||
+//     //     m_ActionsBuffer[i] == PlayerAction::Walk && m_CurrentMovement == PlayerMovement::Left)
+//     //   {
+//     //     m_AnimationAction = PlayerAction::Walk;
+//     //     std::cout << "Condition met" << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
+//     //   }
+//     //   else /*if(m_ActionsBuffer[i] == PlayerAction::None && m_CurrentMovement == PlayerMovement::Still)*/
+//     //   {
+//     //     m_AnimationAction = PlayerAction::None;
+//     //   }
+//     // }
+//   }
+//   // else
+//   // {
+//   //   std::cout << "Actions Buffer empty" << std::endl;
+//   // }
+//   // std::cout << "_____________________________________________________________________" << std::endl;
+//
+//   // std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_AnimationAction) << std::endl;
+//   // if(!m_ActionsBuffer.empty())
+//   // {
+//   //   for(int i = 0; i < m_ActionsBuffer.size(); ++i)
+//   //   {
+//   //     if(m_ActionsBuffer[i] == PlayerAction::None)
+//   //     {
+//   //       m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+//   //     }
+//   //     else if(m_ActionsBuffer[i] == PlayerAction::Walk)
+//   //     {
+//   //       if(m_WalkAnimItr < 1 || m_WalkAnimItr > 13)
+//   //       {
+//   //         m_WalkAnimItr = 1;
+//   //       }
+//   //       m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_WalkAnimItr]);
+//   //       m_WalkAnimItr++;
+//   //     }
+//   //   }
+//   // }
+//
+//   switch (m_AnimationAction){
+//     case PlayerAction::None :
+//       m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+//     break;
+//     case PlayerAction::Walk :
+//       if(m_WalkAnimItr < 1 || m_WalkAnimItr > 13)
+//       {
+//         m_WalkAnimItr = 1;
+//       }
+//       m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_WalkAnimItr]);
+//
+//       m_FrameCount++;
+//       if(m_FrameCount > 60)
+//       {
+//         m_FrameCount = 1;
+//       }
+//
+//       if(m_FrameCount > 2 && m_FrameCount % 3 == 0 && m_IsRunning)
+//       {
+//         m_WalkAnimItr++;
+//       }
+//       else if(m_FrameCount > 4 && m_FrameCount % 5 == 0 && !m_IsRunning)
+//       {
+//         m_WalkAnimItr++;
+//       }
+//     break;
+//     case PlayerAction::Run :
+//       if(m_WalkAnimItr < 1 || m_WalkAnimItr > 13)
+//       {
+//         m_WalkAnimItr = 1;
+//       }
+//       m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_WalkAnimItr]);
+//
+//       m_FrameCount++;
+//       if(m_FrameCount > 60)
+//       {
+//         m_FrameCount = 1;
+//       }
+//
+//       if(m_FrameCount > 2 && m_FrameCount % 3 == 0)
+//       {
+//         m_WalkAnimItr++;
+//       }
+//       // else if(m_FrameCount > 4 && m_FrameCount % 5 == 0 && !m_IsRunning)
+//       // {
+//       //   m_WalkAnimItr++;
+//       // }
+//     break;
+//   // if(m_AnimationAction == PlayerAction::None)
+//   // {
+//   //   m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+//   // }
+//   }
+// }
+
 
 void Player::SetPosition(float x, float y)
 {
@@ -162,7 +261,7 @@ void Player::SetPlayerAction(PlayerAction action)
   m_ActionsBuffer.push_back(action);
   if(action == PlayerAction::Walk)
   {
-    m_CurrentAction = action;
+    m_AnimationAction = action;
   }
 }
 void Player::ClearPlayerActions()
@@ -175,17 +274,52 @@ void Player::MovePlayer(float timeElapsed)
   //Account for player actions before they move
   if(!m_ActionsBuffer.empty())
   {
+    bool b_checkRunFlag = true;
+    int itr = 0;
+    while(b_checkRunFlag)
+    {
+      if(itr > m_ActionsBuffer.size())
+      {
+        m_IsRunning = false;
+        b_checkRunFlag = false;
+      }
+      else if(m_ActionsBuffer[itr] == PlayerAction::Run)
+      {
+        m_IsRunning = true;
+        b_checkRunFlag = false;
+      }
+      itr++;
+    }
+
+    itr = 0;
+    bool b_checkWalkFlag = true;
+    while(b_checkWalkFlag)
+    {
+      if(itr > m_ActionsBuffer.size())
+      {
+        m_IsWalking = false;
+        b_checkWalkFlag = false;
+      }
+      else if(m_ActionsBuffer[itr] == PlayerAction::Walk)
+      {
+        m_IsWalking = true;
+        m_IsRunning = false;
+        b_checkWalkFlag = false;
+      }
+      itr++;
+    }
+
     for(int i = 0; i < m_ActionsBuffer.size(); ++i)
     {
       //std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
-      if(m_ActionsBuffer[i] == PlayerAction::Run)
-      {
-        m_IsRunning = true;
-      }
-      else if(m_ActionsBuffer[i] == PlayerAction::Walk)
-      {
-        m_IsRunning = false;
-      }
+      // if(m_ActionsBuffer[i] == PlayerAction::Run)
+      // {
+      //   m_IsRunning = true;
+      // }
+      // else if(m_ActionsBuffer[i] == PlayerAction::Walk)
+      // {
+      //   m_IsRunning = false;
+      // }
 
       if(m_ActionsBuffer[i] == PlayerAction::Jump)
       {
