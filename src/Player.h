@@ -41,12 +41,7 @@ public:
 
   void MovePlayer(float timeElapsed);
 
-  //void Jump(float timeElapsed);
-
   void CollisionCheck(std::vector<sf::Vector2i> collidableObjects);
-
-  //Commenting out because m_OnGround flag is set with collision checks, but not sure if new solution has bugs or not.
-  // bool GetOnGround(std::vector<sf::Vector2i> platformObjects);
 
   bool OnGround();
 
@@ -55,7 +50,7 @@ public:
 protected:
   sf::Texture m_PlayerTexture;
   sf::Sprite m_PlayerSprite;
-  std::vector<sf::Texture> m_TxtrAnimBuff; //I'm thinking 1 for still, 2 for Left & Right (flip to go right), 2 for up and Down, and 2 for attack
+  std::vector<sf::Texture> m_TxtrAnimBuff;
 
 private:
   PlayerMovement m_CurrentMovement;

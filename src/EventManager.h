@@ -38,7 +38,6 @@ public:
   GameState GetState() const;
   std::string GetMenuDirection() const;
   std::string GetPlayerDirective() const;
-  // std::string GetPlayerAction() const;
   std::vector<std::string> GetPlayerActions() const;
 
 
@@ -61,6 +60,12 @@ private:
 
   std::string m_PlayerMoveDirective;
   std::string m_PreviousMoveDirective; //Keep track of last directive for keyboard press logic
-  //std::string m_PlayerActionDirective;
   std::vector<std::string> m_ActionDirectives;
+
+  //Private Methods
+  //This method does some cleanup of my bad user input logic for when an action changes
+  //For example when the player jumps then lands, we need to remove the jump directive
+  //and replace it with the "Land directive".  This should be used for when an action
+  //button is released after being pressed.
+  void ActionCleanup(std::string s_changeFrom, std::string s_changeTo);
 };
