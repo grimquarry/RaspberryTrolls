@@ -130,7 +130,7 @@ void EventManager::HandleEvent(sf::Event& l_event)
         sf::Keyboard::isKeyPressed(sf::Keyboard::A) && sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
           m_ActionDirectives.push_back("Run");
-          std::cout << "A button is pushed" << std::endl;
+          //std::cout << "A button is pushed" << std::endl;
           //m_PlayerActionDirective = "Run";
         }
         else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !sf::Keyboard::isKeyPressed(sf::Keyboard::A) ||
@@ -147,14 +147,27 @@ void EventManager::HandleEvent(sf::Event& l_event)
         case sf::Keyboard::Space:
           if(m_state == GameState::GamePlay)
           {
-            m_ActionDirectives.push_back("Land");
+            if(m_state == GameState::GamePlay)
+            {
+              if(!m_ActionDirectives.empty())
+              {
+                for(int i = 0; i < m_ActionDirectives.size(); i++)
+                {
+                  if(m_ActionDirectives[i] == "Jump")
+                  {
+                    m_ActionDirectives.erase(m_ActionDirectives.begin() + i);
+                    //std::cout << "This Jump Ran" << std::endl;
+                    m_ActionDirectives.push_back("Land");
+                  }
+                }
+              }
+            }
           }
           break;
         case sf::Keyboard::Key::A:
           if(m_state == GameState::GamePlay)
           {
-            std::cout << "A button was lifted" << std::endl;
-            /******This mostly works, but gets kind of weird when you push the jump button so the logic will need some fixing********/
+            //std::cout << "A button was lifted" << std::endl;
             if(!m_ActionDirectives.empty())
             {
               for(int i = 0; i < m_ActionDirectives.size(); i++)
@@ -162,7 +175,7 @@ void EventManager::HandleEvent(sf::Event& l_event)
                 if(m_ActionDirectives[i] == "Run")
                 {
                   m_ActionDirectives.erase(m_ActionDirectives.begin() + i);
-                  std::cout << "This Ran" << std::endl;
+                  //std::cout << "This Ran" << std::endl;
                   m_ActionDirectives.push_back("Walk");
                 }
               }
