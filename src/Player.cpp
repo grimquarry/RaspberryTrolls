@@ -4,7 +4,7 @@ Player::Player()
 {
   m_CurrentMovement = PlayerMovement::Still;
   m_PreviousMovement = PlayerMovement::Still;
-  m_StopXDirection = PlayerMovement::Still;
+  m_StopXDirection = PlayerMovement::Right;
   m_AnimationAction = PlayerAction::None;
 
   //m_PlayerTexture and m_PlayerSprite are commented out because this is now
@@ -71,19 +71,19 @@ void Player::AddAnimTexture(std::string txtrLocation)
 void Player::HandleAnimTexture()
 {
   /*Uncomment Below to test what's in the Actions Buffer at the point this method is called for troubleshooting*/
-  std::cout << "_____________________________________________________________________" << std::endl;
-  for(int i = 0; i < m_ActionsBuffer.size(); ++i)
-  {
-    std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
-  }
-  std::cout << "_____________________________________________________________________" << std::endl;
+  // std::cout << "_____________________________________________________________________" << std::endl;
+  // for(int i = 0; i < m_ActionsBuffer.size(); ++i)
+  // {
+  //   std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
+  // }
+  // std::cout << "_____________________________________________________________________" << std::endl;
   if(m_CurrentMovement == PlayerMovement::Still && !m_IsJumping)
   {
     m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
   }
   else if(m_IsJumping)
   {
-    std::cout << "Jump ran" << std::endl;
+    //std::cout << "Jump ran" << std::endl;
     m_PlayerSprite.setTexture(m_TxtrAnimBuff[14]);
   }
   else if(m_IsWalking || m_IsRunning)
@@ -185,6 +185,7 @@ void Player::MovePlayer(float timeElapsed)
     else if(!m_OnGround)
     {
       m_PlayerVelY += 0.20f;
+      //m_PlayerVelX = m_MaxXVelocity;
     }
     if(m_OnGround && m_IsLanding)
     {
@@ -215,6 +216,7 @@ void Player::MovePlayer(float timeElapsed)
   //Give player new position based on directive
   if(m_CurrentMovement == PlayerMovement::Right)
   {
+    m_StopXDirection = PlayerMovement::Right;
     if(m_PreviousMovement != PlayerMovement::Right)
     {
       m_PlayerSprite.setScale({1, 1});
@@ -225,6 +227,7 @@ void Player::MovePlayer(float timeElapsed)
   }
   else if(m_CurrentMovement == PlayerMovement::Left)
   {
+    m_StopXDirection = PlayerMovement::Left;
     if(m_PreviousMovement != PlayerMovement::Left)
     {
       m_PlayerSprite.setScale({-1, 1});
@@ -233,6 +236,7 @@ void Player::MovePlayer(float timeElapsed)
     ChangeXVelocity();
     m_PlayerPosX -= (m_PlayerVelX * timeElapsed);
   }
+  //Lines below commented out because they shouldn't do anything at this point (revist when duck and climb directives are created)
   else if(m_CurrentMovement == PlayerMovement::Up)
   {
     m_PlayerPosY -= (m_PlayerVelY * timeElapsed);
@@ -243,23 +247,53 @@ void Player::MovePlayer(float timeElapsed)
   }
   else if (m_CurrentMovement == PlayerMovement::Still)
   {
+    // if(m_IsJumping)
+    // {
+    //   ChangeXVelocity();
+    //   if(m_StopXDirection == PlayerMovement::Right)
+    //   {
+    //     //std::cout << "Ran" << std::endl;
+    //     m_PlayerPosX += m_PlayerVelX * timeElapsed;
+    //   }
+    //   if(m_StopXDirection == PlayerMovement::Left)
+    //   {
+    //     m_PlayerPosX -= m_PlayerVelX * timeElapsed;
+    //   }
+    // }
     if(m_IsJumping)
     {
-      if(m_StopXDirection == PlayerMovement::Right)
+      // if(m_PlayerVelX > 0.f)
+      // {
+      //   m_PlayerPosX += m_PlayerVelX * timeElapsed;
+      // }
+      // else if(m_PlayerVelX < 0.f)
+      // {
+      //   m_PlayerPosX -= m_PlayerVelX * timeElapsed;
+      // }
+      //ChangeXVelocity();
+      std::cout << static_cast<std::underlying_type<PlayerMovement>::type>(m_StopXDirection)<< std::endl;
+      if (m_PreviousMovement == PlayerMovement::Right)
       {
-        std::cout << "Ran" << std::endl;
-        m_PlayerPosX += m_PlayerVelX * timeElapsed;
+        m_PlayerPosX += (m_PlayerVelX * timeElapsed);
       }
-      if(m_StopXDirection == PlayerMovement::Left)
+      else if(m_PreviousMovement == PlayerMovement::Left)
       {
         m_PlayerPosX -= m_PlayerVelX * timeElapsed;
+      }
+      else if(m_PreviousMovement == PlayerMovement::Still)
+      {
+        m_PlayerPosX = m_PlayerPosX;
+      }
+      else
+      {
+        m_PlayerVelX = m_MaxXVelocity;
       }
     }
     if(m_PlayerVelX != 0.f && !m_LeftCollision && !m_RightCollision)
     {
       if(m_PreviousMovement == PlayerMovement::Left)
       {
-        m_StopXDirection = PlayerMovement::Left;
+        m_StopXDirection = PlayerMovement::Left; //Ummm.... I don't think this is working?
       }
       else if(m_PreviousMovement == PlayerMovement::Right)
       {
