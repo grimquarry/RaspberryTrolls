@@ -20,7 +20,7 @@ Game::Game()
   m_optionsMenuIndex = 0;
 
   std::string pathToTexture;
-  for(int i = 0; i <= 13; i++)
+  for(int i = 0; i <= 14; i++)
   {
     pathToTexture = "../resources/images/BucketsMovement_" + std::to_string(i) + ".png";
     std::cout << pathToTexture << std::endl;

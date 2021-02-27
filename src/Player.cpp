@@ -71,15 +71,20 @@ void Player::AddAnimTexture(std::string txtrLocation)
 void Player::HandleAnimTexture()
 {
   /*Uncomment Below to test what's in the Actions Buffer at the point this method is called for troubleshooting*/
-  // std::cout << "_____________________________________________________________________" << std::endl;
-  // for(int i = 0; i < m_ActionsBuffer.size(); ++i)
-  // {
-  //   std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
-  // }
-  // std::cout << "_____________________________________________________________________" << std::endl;
-  if(m_CurrentMovement == PlayerMovement::Still)
+  std::cout << "_____________________________________________________________________" << std::endl;
+  for(int i = 0; i < m_ActionsBuffer.size(); ++i)
+  {
+    std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
+  }
+  std::cout << "_____________________________________________________________________" << std::endl;
+  if(m_CurrentMovement == PlayerMovement::Still && !m_IsJumping)
   {
     m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+  }
+  else if(m_IsJumping)
+  {
+    std::cout << "Jump ran" << std::endl;
+    m_PlayerSprite.setTexture(m_TxtrAnimBuff[14]);
   }
   else if(m_IsWalking || m_IsRunning)
   {
