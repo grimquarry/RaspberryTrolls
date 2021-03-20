@@ -23,11 +23,12 @@ Player::Player()
   m_IsWalking = false;
   m_IsJumping = false;
   m_IsLanding = false;
+  m_IgnoreJump = false;
 
   m_MinXVelocity = 6;
   m_MaxXVelocity = m_MinXVelocity;
   m_MinYVelocity = 3.0f;
-  m_MaxYVelocity = 7.0f;
+  m_MaxYVelocity = 6.0f;
 
   //Walk and Run Player Action animation iterates through the m_TxtrAnimBuff
   //(Texture Animation Buffer).  Index 0 is for No action and indexes 1 - 13
@@ -68,6 +69,30 @@ void Player::AddAnimTexture(std::string txtrLocation)
   }
 }
 
+void Player::WalkAnimation()
+{
+  if(m_WalkAnimItr < 1 || m_WalkAnimItr > 13)
+  {
+    m_WalkAnimItr = 1;
+  }
+  m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_WalkAnimItr]);
+
+  m_FrameCount++;
+  if(m_FrameCount > 60)
+  {
+    m_FrameCount = 1;
+  }
+
+  if(m_FrameCount > 2 && m_FrameCount % 3 == 0 && m_IsRunning)
+  {
+    m_WalkAnimItr++;
+  }
+  else if(m_FrameCount > 4 && m_FrameCount % 5 == 0 && !m_IsRunning)
+  {
+    m_WalkAnimItr++;
+  }
+}
+
 void Player::HandleAnimTexture()
 {
   /*Uncomment Below to test what's in the Actions Buffer at the point this method is called for troubleshooting*/
@@ -81,32 +106,24 @@ void Player::HandleAnimTexture()
   {
     m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
   }
-  else if(m_IsJumping)
+  else if(m_IsJumping && !m_OnGround)
   {
     //std::cout << "Jump ran" << std::endl;
     m_PlayerSprite.setTexture(m_TxtrAnimBuff[14]);
   }
-  else if(m_IsWalking || m_IsRunning)
+  else if(m_IsWalking && !m_IgnoreJump || m_IsRunning && !m_IgnoreJump)
   {
-    if(m_WalkAnimItr < 1 || m_WalkAnimItr > 13)
+    WalkAnimation();
+  }
+  else if(m_IsJumping && m_IgnoreJump)
+  {
+    if(m_CurrentMovement == PlayerMovement::Still)
     {
-      m_WalkAnimItr = 1;
+      m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
     }
-    m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_WalkAnimItr]);
-
-    m_FrameCount++;
-    if(m_FrameCount > 60)
+    else if(m_IsWalking || m_IsRunning)
     {
-      m_FrameCount = 1;
-    }
-
-    if(m_FrameCount > 2 && m_FrameCount % 3 == 0 && m_IsRunning)
-    {
-      m_WalkAnimItr++;
-    }
-    else if(m_FrameCount > 4 && m_FrameCount % 5 == 0 && !m_IsRunning)
-    {
-      m_WalkAnimItr++;
+      WalkAnimation();
     }
   }
 }
@@ -172,26 +189,43 @@ void Player::MovePlayer(float timeElapsed)
       if(m_ActionsBuffer[i] == PlayerAction::Land)
       {
         m_IsLanding = true;
+        m_IgnoreJump = false;
       }
     }
   }
 
   if(m_IsJumping)
   {
-    if(m_OnGround)
+    if(!m_IgnoreJump)
     {
-      m_PlayerVelY = -1 * m_MaxYVelocity;
+      if(m_IsRunning && m_OnGround)
+      {
+        m_PlayerVelY = -12;
+        m_IgnoreJump = true;
+      }
+      else if(m_IsWalking && m_OnGround)
+      {
+        m_PlayerVelY = -9;
+        m_IgnoreJump = true;
+      }
     }
-    else if(!m_OnGround)
+    if(m_IsLanding)
     {
-      m_PlayerVelY += 0.20f;
-      //m_PlayerVelX = m_MaxXVelocity;
+      m_PlayerVelY += 0.5;
+      m_IgnoreJump = true;
     }
+    // else if(!m_OnGround)
+    // {
+    //   //m_PlayerVelY += m_MaxYVelocity;
+    //   //m_PlayerVelY += 0.20f;
+    //   //m_PlayerVelX = m_MaxXVelocity;
+    // }
     if(m_OnGround && m_IsLanding)
     {
       m_PlayerVelY = m_MinYVelocity;
       m_IsJumping = false;
       m_IsLanding = false;
+      m_IgnoreJump = false;
     }
     m_PlayerPosY += (m_PlayerVelY * timeElapsed);
   }
@@ -243,6 +277,14 @@ void Player::MovePlayer(float timeElapsed)
   }
   else if(m_CurrentMovement == PlayerMovement::Down)
   {
+    if(m_IsRunning)
+    {
+      m_PlayerVelY += 0.90f;
+    }
+    else
+    {
+      m_PlayerVelY += 0.50f;
+    }
     m_PlayerPosY += (m_PlayerVelY * timeElapsed);
   }
   else if (m_CurrentMovement == PlayerMovement::Still)
@@ -284,10 +326,10 @@ void Player::MovePlayer(float timeElapsed)
       {
         m_PlayerPosX = m_PlayerPosX;
       }
-      else
-      {
-        m_PlayerVelX = m_MaxXVelocity;
-      }
+      // else
+      // {
+      //   m_PlayerVelX = m_MaxXVelocity;
+      // }
     }
     if(m_PlayerVelX != 0.f && !m_LeftCollision && !m_RightCollision)
     {

@@ -24,6 +24,7 @@ public:
   ~Player();
 
   void AddAnimTexture(std::string txtrLocation);
+  void WalkAnimation();
   void HandleAnimTexture();
 
   float GetPlayerWidth();
@@ -69,6 +70,7 @@ private:
   bool m_IsWalking;
   bool m_IsJumping;
   bool m_IsLanding;
+  bool m_IgnoreJump;
   bool m_LeftCollision;
   bool m_RightCollision;
   std::vector<PlayerAction> m_ActionsBuffer;
