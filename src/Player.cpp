@@ -432,7 +432,9 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
         else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX
         && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY && m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY)
         {
+          std::cout << "Body Collision Right" << std::endl;
           //m_RightCollision = true;
+          SetPlayerMovement(PlayerMovement::Still);
           m_PlayerPosX = objectStartX - m_PlayerWidth;
           m_MaxXVelocity = m_MinXVelocity;
         }
@@ -443,6 +445,7 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
           m_PlayerPosY + m_PlayerHeight < objectEndY && m_PlayerPosY + m_PlayerHeight > objectStartY)
           {
             //m_LeftCollision = true;
+            std::cout << "Foot Collision" << std::endl;
             m_PlayerPosX = objectEndX;
             m_MaxXVelocity = m_MinXVelocity;
           }
@@ -450,6 +453,7 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
         else if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
           m_PlayerPosY < objectEndY && m_PlayerPosY > objectStartY)
           {
+            std::cout << "Head Collision" << std::endl;
             //m_LeftCollision = true;
             m_PlayerPosX = objectEndX;
             m_MaxXVelocity = m_MinXVelocity;
@@ -458,8 +462,10 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
         else if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
           m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY)
           {
+            std::cout << "Body Collision Left" << std::endl;
             //m_LeftCollision = true;
-            m_PlayerPosX = objectEndX;
+            m_PlayerPosX = objectEndX + 0.5f;  //Not fully sure why, but collision gets buggy when the .5 value isn't added (not necessary with right body collisions).
+            SetPlayerMovement(PlayerMovement::Still);  //Stop run/walk animation when collision happens
             m_MaxXVelocity = m_MinXVelocity;
           }
       break;
@@ -515,7 +521,7 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
       else if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
         m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY)
         {
-          m_PlayerPosX = objectEndX;
+          m_PlayerPosX = objectEndX + 0.5f; //Not fully sure why, but collision gets buggy when the .5 value isn't added (not necessary with right body collisions).
           m_MaxXVelocity = m_MinXVelocity;
         }
 
