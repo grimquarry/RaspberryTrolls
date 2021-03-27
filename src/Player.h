@@ -64,6 +64,8 @@ private:
   float m_PlayerVelY;
   float m_PlayerWidth;
   float m_PlayerHeight;
+  float m_PreviousPosX;
+  float m_PreviousPosY;
 
   bool m_OnGround;
   bool m_IsRunning;
