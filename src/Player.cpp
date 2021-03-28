@@ -315,7 +315,8 @@ void Player::MovePlayer(float timeElapsed)
       //   m_PlayerPosX -= m_PlayerVelX * timeElapsed;
       // }
       //ChangeXVelocity();
-      std::cout << static_cast<std::underlying_type<PlayerMovement>::type>(m_StopXDirection)<< std::endl;
+
+      //std::cout << static_cast<std::underlying_type<PlayerMovement>::type>(m_StopXDirection)<< std::endl;
       if (m_PreviousMovement == PlayerMovement::Right)
       {
         m_PlayerPosX += (m_PlayerVelX * timeElapsed);
@@ -337,7 +338,7 @@ void Player::MovePlayer(float timeElapsed)
     {
       if(m_PreviousMovement == PlayerMovement::Left)
       {
-        m_StopXDirection = PlayerMovement::Left; //Ummm.... I don't think this is working?
+        m_StopXDirection = PlayerMovement::Left; //Ummm.... I don't think this is working?  I don't remember this but it seems fine now
       }
       else if(m_PreviousMovement == PlayerMovement::Right)
       {
@@ -377,6 +378,7 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
     int objectEndX = collidableObjects[i].x + objectWidth;
     int objectStartY = collidableObjects[i].y;
     int objectEndY = collidableObjects[i].y + objectHeight;
+    //bool testTrigger = false;
 
     for(int j = 0; j < m_ActionsBuffer.size(); ++j)
     {
@@ -399,15 +401,15 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
           }
         //Check for Right side collisions while jumping and adjust accordingly
         else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
-          m_PlayerPosY > objectStartX && m_PlayerPosY > objectEndX)
+          m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
         {
-          //When player is under the platform.
+           //When player is under the platform.
           if(m_PlayerPosY < objectEndY && m_PreviousPosY > objectEndY)
           {
             m_PlayerPosY = objectEndY + 5;
           }
-          //When player collides into the platform from the left
-          else if(m_PlayerPosX > objectStartX && m_PreviousPosX < objectStartX)
+          //When player collides into the platform from the right
+          else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PreviousPosX + m_PlayerWidth < objectStartX)
           {
             m_PlayerPosX = objectStartX - 5;
           }
@@ -415,19 +417,24 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
       }
     }
 
-    //Account for collsions on player's lower left
+    //Account for collsions on player's lower left when landing from a jump
     if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
       m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
       {
         //std::cout << "Lower Left Collision" << std::endl;
         m_PlayerPosY = objectStartY - m_PlayerHeight;
+        //std::cout << m_IsJumping << std::endl;
       }
-    //Account for collsions on player's lower right
+    //Account for collsions on player's lower right when landing from a jump
     else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
       m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
       {
         //std::cout << "Lower Right Collision" << std::endl;
         m_PlayerPosY = objectStartY - m_PlayerHeight;
+        //std::cout << m_OnGround << std::endl;
+        // m_IsJumping = false;
+        // m_OnGround = true;
+        //testTrigger = true;
       }
 
     switch(m_CurrentMovement){
@@ -439,7 +446,7 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
           && m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
           {
             //m_RightCollision = true;
-            std::cout << "Foot Collision Right" << std::endl;
+            //std::cout << "Foot Collision Right" << std::endl;
             m_PlayerPosX = objectStartX - m_PlayerWidth;
             m_MaxXVelocity = m_MinXVelocity;
           }
@@ -448,7 +455,7 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
         && m_PlayerPosY > objectStartY && m_PlayerPosY - 0.5f < objectEndY)
         {
           //m_RightCollision = true;
-          std::cout << "Head Collision Right" << std::endl;
+          //std::cout << "Head Collision Right" << std::endl;
           if(!m_IsJumping)
           {
             m_PlayerPosX = objectStartX - m_PlayerWidth;
@@ -460,7 +467,7 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
         else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX
         && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY && m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY)
         {
-          std::cout << "Body Collision Right" << std::endl;
+          //std::cout << "Body Collision Right" << std::endl;
           //m_RightCollision = true;
           SetPlayerMovement(PlayerMovement::Still);
           m_PlayerPosX = objectStartX - m_PlayerWidth;
@@ -473,7 +480,7 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
           m_PlayerPosY + m_PlayerHeight < objectEndY && m_PlayerPosY + m_PlayerHeight > objectStartY)
           {
             //m_LeftCollision = true;
-            std::cout << "Foot Collision Left" << std::endl;
+            //std::cout << "Foot Collision Left" << std::endl;
             m_PlayerPosX = objectEndX;
             m_MaxXVelocity = m_MinXVelocity;
           }
@@ -492,14 +499,14 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
               m_MaxXVelocity = m_MaxXVelocity * -1;
               SetPlayerMovement(PlayerMovement::Still);
             }
-            std::cout << "Head Collision Left" << std::endl;
+            //std::cout << "Head Collision Left" << std::endl;
             //m_LeftCollision = true;
           }
         //Body Collision
         else if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
           m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY)
           {
-            std::cout << "Body Collision Left" << std::endl;
+            //std::cout << "Body Collision Left" << std::endl;
             //m_LeftCollision = true;
             m_PlayerPosX = objectEndX + 0.5f;  //Not fully sure why, but collision gets buggy when the .5 value isn't added (not necessary with right body collisions).
             SetPlayerMovement(PlayerMovement::Still);  //Stop run/walk animation when collision happens
@@ -586,13 +593,24 @@ void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
       break;
     }
 
+    // if(testTrigger)
+    // {
+    //   std::cout << "Player X Position: " << m_PlayerPosX + m_PlayerWidth << std::endl;
+    //   std::cout << "Player Y Postion: " << m_PlayerPosY + m_PlayerHeight << std::endl;
+    //   std::cout << "Platform X Postion: " << objectStartX << std::endl;
+    //   std::cout << "Platform Y Position: " << objectStartY << std::endl;
+    //   std::cout << "Current Movement: " << static_cast<std::underlying_type<PlayerMovement>::type>(m_StopXDirection)<< std::endl;
+    // }
+
     //Determine if player is on ground or not.  m_OnGround is used/returned by the bool OnGround method
-    if(objectStartY - m_PlayerHeight == m_PlayerPosY && m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX)
+    if(objectStartY == m_PlayerPosY + m_PlayerHeight && m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX)
     {
+      //std::cout << "This condition met" << std::endl;
       m_OnGround = true;
     }
-    else if(objectStartY - m_PlayerHeight == m_PlayerPosY && m_PlayerPosX + m_PlayerWidth < objectEndX&& m_PlayerPosX > objectStartX)
+    else if(objectStartY == m_PlayerPosY + m_PlayerHeight && m_PlayerPosX + m_PlayerWidth < objectEndX && m_PlayerPosX + m_PlayerWidth > objectStartX)
     {
+      //std::cout << "Running" << std::endl;
       m_OnGround = true;
     }
     //Determine if player is flush with a platfrom to his Left or Right.
