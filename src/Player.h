@@ -83,6 +83,7 @@ private:
   float m_MinXVelocity;
   float m_MaxYVelocity;
   float m_MinYVelocity;
+  float m_MaxRunSpeed;
 
   int m_WalkAnimItr;
   int m_FrameCount;

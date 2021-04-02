@@ -25,10 +25,12 @@ Player::Player()
   m_IsLanding = false;
   m_IgnoreJump = false;
 
-  m_MinXVelocity = 6;
+  m_MinXVelocity = 7;
   m_MaxXVelocity = m_MinXVelocity;
+  m_MaxRunSpeed = 11;
   m_MinYVelocity = 3.0f;
   m_MaxYVelocity = 6.0f;
+
 
   //Walk and Run Player Action animation iterates through the m_TxtrAnimBuff
   //(Texture Animation Buffer).  Index 0 is for No action and indexes 1 - 13
@@ -235,7 +237,7 @@ void Player::MovePlayer(float timeElapsed)
 
   if(m_IsRunning)
   {
-    m_MaxXVelocity = 10.0f;
+    m_MaxXVelocity = m_MaxRunSpeed;
   }
   else if(!m_IsRunning)
   {
