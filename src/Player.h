@@ -44,6 +44,8 @@ public:
 
   void CollisionCheck(std::vector<sf::Vector2i> collidableObjects);
 
+  bool SideCollision();
+
   bool OnGround();
 
   void Draw(Window& l_window);
@@ -75,8 +77,8 @@ private:
   bool m_IgnoreJump;
   bool m_LeftCollision;
   bool m_RightCollision;
+  bool m_LowerLeftCollision;
   std::vector<PlayerAction> m_ActionsBuffer;
-  //bool m_IsColliding;
 
   void ChangeXVelocity();
   float m_MaxXVelocity;

@@ -151,38 +151,47 @@ void Game::Update()
     //   m_Player1.MovePlayer(fTimeElapsed);
     //   m_Player1.CollisionCheck(m_LevelManager.GetVisiblePlatforms());
     // }
-    if(!m_Player1.OnGround())
-    {
-      m_Player1.SetPlayerMovement(PlayerMovement::Down);
-      m_Player1.MovePlayer(fTimeElapsed);
-      m_Player1.CollisionCheck(m_LevelManager.GetVisiblePlatforms());
-    }
+    // if(!m_Player1.OnGround())
+    // {
+    //   // m_Player1.SetPlayerMovement(PlayerMovement::Down);
+    //   m_Player1.CollisionCheck(m_LevelManager.GetVisiblePlatforms());
+    //   // m_Player1.MovePlayer(fTimeElapsed);
+    //   // m_Player1.CollisionCheck(m_LevelManager.GetVisiblePlatforms());
+    // }
 
     //Get the user input directive to set player movement
-    if(m_window.GetPlayerDirective() == "Right")
+    if(!m_Player1.SideCollision())
     {
-      m_Player1.SetPlayerMovement(PlayerMovement::Right);
-    }
-    else if(m_window.GetPlayerDirective() == "Left")
-    {
-      m_Player1.SetPlayerMovement(PlayerMovement::Left);
-    }
-    else if(m_window.GetPlayerDirective() == "Up")
-    {
-      m_Player1.SetPlayerMovement(PlayerMovement::Up);
-    }
-    else if(m_window.GetPlayerDirective() == "Down")
-    {
-      m_Player1.SetPlayerMovement(PlayerMovement::Down);
-    }
-    else if (m_window.GetPlayerDirective() == "Still")
-    {
-      m_Player1.SetPlayerMovement(PlayerMovement::Still);
+      if(m_window.GetPlayerDirective() == "Right")
+      {
+        m_Player1.SetPlayerMovement(PlayerMovement::Right);
+      }
+      else if(m_window.GetPlayerDirective() == "Left")
+      {
+        m_Player1.SetPlayerMovement(PlayerMovement::Left);
+      }
+      else if(m_window.GetPlayerDirective() == "Up")
+      {
+        m_Player1.SetPlayerMovement(PlayerMovement::Up);
+      }
+      else if(m_window.GetPlayerDirective() == "Down")
+      {
+        m_Player1.SetPlayerMovement(PlayerMovement::Down);
+      }
+      else if (m_window.GetPlayerDirective() == "Still")
+      {
+        m_Player1.SetPlayerMovement(PlayerMovement::Still);
+      }
+      else
+      {
+        m_Player1.SetPlayerMovement(PlayerMovement::Still);
+      }
     }
     else
     {
       m_Player1.SetPlayerMovement(PlayerMovement::Still);
     }
+
     //Move the player with the directive given by user input
     m_Player1.MovePlayer(fTimeElapsed);
 
