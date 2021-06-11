@@ -1,5 +1,5 @@
 #pragma once
-
+#include <iostream>
 #include <vector>
 
 #include <SFML/System/Clock.hpp>
@@ -10,9 +10,11 @@
 #include "TitleScreen.h"
 #include "Menu.h"
 #include "OptionsScreen.h"
-//#include "Level.h" //Likely will need to change this to LevelManger, this is for testing purposes.
+#include "CollisionHandler.h"
 #include "LevelManager.h"
 #include "Player.h"
+
+#include "Platform.h"
 
 
 class Game {
@@ -26,8 +28,10 @@ public:
   Window* GetWindow();
 
 protected: //Apperantly anything tied to an SFML texture must be public or protected (perhaps it's how I'm using it?  possibly incorrectly?)
-  // Level testLevel;
+  //Level m_Level_1_1;
   Player m_Player1;
+  std::vector<Platform> vPlats;
+
 
 private:
   Window m_window;
@@ -53,4 +57,5 @@ private:
 
   std::vector<std::string> m_PlayerActions;
 
+  CollisionHandler m_CollisionHandler;
 };

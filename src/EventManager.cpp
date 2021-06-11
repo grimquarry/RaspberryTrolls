@@ -6,22 +6,12 @@ EventManager::EventManager()
   m_state = GameState::Title;
   m_quitGame = false;
   m_menuDirection = "None";
-  m_PlayerMoveDirective = "Still";
-  m_PreviousMoveDirective = "Still";  //Setting this to Still essentially resets it, which is necessary when a key is released
+  m_LeftButtonDown = false;
+  m_RightButtonDown = false;
+  m_RunButtonDown = false;
+  m_JumpButtonDown = false;
 }
 EventManager::~EventManager() { }
-
-void EventManager::ActionCleanup(std::string s_changeFrom, std::string s_changeTo)
-{
-  for(int i = 0; i < m_ActionDirectives.size(); i++)
-  {
-    if(m_ActionDirectives[i] == s_changeFrom)
-    {
-      m_ActionDirectives.erase(m_ActionDirectives.begin() + i);
-      m_ActionDirectives.push_back(s_changeTo);
-    }
-  }
-}
 
 void EventManager::HandleEvent(sf::Event& l_event)
 {
@@ -31,27 +21,31 @@ void EventManager::HandleEvent(sf::Event& l_event)
   m_menuDirection = "None";
 
   EventType sfmlEvent = (EventType)l_event.type;
-  //std::cout << "Controller X Axis Postion is: " << sf::Joystick::getAxisPosition(0, sf::Joystick::X) << std::endl;
-  //std::cout << "Controller Y Axis Positsion is: " << sf::Joystick::getAxisPosition(0, sf::Joystick::Y) << std::endl;
   switch(sfmlEvent)
   {
     case(EventType::JoystickButtonPressed):
       if(m_state == GameState::GamePlay)
       {
-        //Start with a fresh actions buffer
-        if(!m_ActionDirectives.empty())
-        {
-          m_ActionDirectives.clear();
-        }
 
         if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Run")))
         {
-          m_ActionDirectives.push_back("Run");
-          std::cout << "Run button was pressed" << std::endl;
+          m_RunButtonDown = true;
+          if(!m_ActionDirectives.empty())
+          {
+            // std::cout << "Values in EventManager PlayerAction Vector: " << std::endl;
+            // for(int i = 0; i < m_ActionDirectives.size(); ++i)
+            // {
+            //   std::cout << i << ": " << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionDirectives[i]) << std::endl;
+            // }
+
+            std::replace (m_ActionDirectives.begin(), m_ActionDirectives.end(), PlayerAction::Walk, PlayerAction::Run);
+          }
+          else { m_ActionDirectives.push_back(PlayerAction::Run); }
         }
         if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Jump")))
         {
-          m_ActionDirectives.push_back("Jump");
+          m_JumpButtonDown = true;
+          m_ActionDirectives.push_back(PlayerAction::Jump);
           std::cout << "Jump button was pressed" << std::endl;
         }
         if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Attack")))
@@ -81,17 +75,17 @@ void EventManager::HandleEvent(sf::Event& l_event)
       {
         if(!sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Run")))
         {
+          m_RunButtonDown = false;
           if(!m_ActionDirectives.empty())
           {
-            ActionCleanup("Run", "Walk");
+            std::replace (m_ActionDirectives.begin(), m_ActionDirectives.end(), PlayerAction::Run, PlayerAction::Walk);
           }
+          else { m_ActionDirectives.push_back(PlayerAction::Walk); }
         }
         if(!sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Jump")))
         {
-          if(!m_ActionDirectives.empty())
-          {
-            ActionCleanup("Jump", "Land");
-          }
+          m_ActionDirectives.push_back(PlayerAction::Land);
+          m_JumpButtonDown = false;
         }
       }
     break;
@@ -99,59 +93,45 @@ void EventManager::HandleEvent(sf::Event& l_event)
       m_quitGame = true;
     break;
     case(EventType::KeyPressed):
-      if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+      if(l_event.key.code == sf::Keyboard::Escape)
       {
         m_quitGame = true;
       }
       if(m_state == GameState::GamePlay)
       {
-
-        //Start with a fresh actions buffer
-        if(!m_ActionDirectives.empty())
+        if(l_event.key.code == sf::Keyboard::Right)
         {
-          m_ActionDirectives.clear();
+          m_RightButtonDown = true;
+          m_MoveDirectives.push_back(PlayerMovement::Right);
+          m_ActionDirectives.push_back(PlayerAction::Walk);
         }
-        //This serires of conditional statements first checks to see if a key is pressed.  If it is, it then checks to see if the player is already moving in that direction.
-        //If the player is already going in the direction, the conditional is passed over and the program is essentially waiting for that key to be lifted to stop the Player
-        //from moving in that direction.  To account for the fact people will sometimes press another direction before they lift the key of the previous direction the m_PreviousMoveDirective
-        //was created.  The logic will skip over the conditional if the previous move directive is the same as the key being pressed because the only way that could happen (I think) is
-        //if two keys are being pressed at the same time.  For example: if Right is pressed, then Down is pressed, and both are held down at the same time, the
-        //m_PreviousMoveDirective will be Right, causing the if statement to be passed over.  Ultimately, checking that previous directive makes it so the sprite doesn zig zag
-        //between Right and Down or any other combination of two keys that are being pressed, it will only go in the direction that resulted from the most recent key press.
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && m_PlayerMoveDirective != "Right" && m_PreviousMoveDirective !="Right")
+        else if(l_event.key.code == sf::Keyboard::Left)
         {
-          m_PreviousMoveDirective = m_PlayerMoveDirective;
-          m_PlayerMoveDirective = "Right";
-        }
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && m_PlayerMoveDirective != "Left" && m_PreviousMoveDirective != "Left")
-        {
-          m_PreviousMoveDirective = m_PlayerMoveDirective;
-          m_PlayerMoveDirective = "Left";
-        }
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && m_PlayerMoveDirective != "Down" && m_PreviousMoveDirective != "Down")
-        {
-          m_PreviousMoveDirective = m_PlayerMoveDirective;
-          m_PlayerMoveDirective = "Down";
-        }
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && m_PlayerMoveDirective != "Up" && m_PreviousMoveDirective != "Up")
-        {
-          m_PreviousMoveDirective = m_PlayerMoveDirective;
-          m_PlayerMoveDirective = "Up";
+          m_LeftButtonDown = true;
+          m_MoveDirectives.push_back(PlayerMovement::Left);
+          m_ActionDirectives.push_back(PlayerAction::Walk);
         }
 
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+        if(l_event.key.code == sf::Keyboard::Down)
         {
-          m_ActionDirectives.push_back("Jump");
+          m_MoveDirectives.push_back(PlayerMovement::Down);
         }
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A) && sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ||
-        sf::Keyboard::isKeyPressed(sf::Keyboard::A) && sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        else if(l_event.key.code == sf::Keyboard::Up)
         {
-          m_ActionDirectives.push_back("Run");
+          m_MoveDirectives.push_back(PlayerMovement::Up);
         }
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !sf::Keyboard::isKeyPressed(sf::Keyboard::A) ||
-        sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+
+        if(l_event.key.code == sf::Keyboard::Space)
         {
-          m_ActionDirectives.push_back("Walk");
+          m_ActionDirectives.push_back(PlayerAction::Jump);
+        }
+        if(l_event.key.code == sf::Keyboard::A)
+        {
+          if(!m_ActionDirectives.empty())
+          {
+            std::replace (m_ActionDirectives.begin(), m_ActionDirectives.end(), PlayerAction::Walk, PlayerAction::Run);
+          }
+          else { m_ActionDirectives.push_back(PlayerAction::Run); }
         }
       }
     break;
@@ -159,53 +139,15 @@ void EventManager::HandleEvent(sf::Event& l_event)
     case(EventType::KeyReleased):
       switch (l_event.key.code)
       {
-        case sf::Keyboard::Space:
-          if(m_state == GameState::GamePlay)
-          {
-            if(m_state == GameState::GamePlay)
-            {
-              if(!m_ActionDirectives.empty())
-              {
-                ActionCleanup("Jump", "Land");
-              }
-            }
-          }
-          break;
-        case sf::Keyboard::Key::A:
-          if(m_state == GameState::GamePlay)
-          {
-            //std::cout << "A button was lifted" << std::endl;
-            if(!m_ActionDirectives.empty())
-            {
-              ActionCleanup("Run", "Walk");
-            }
-          }
-        break;
         case sf::Keyboard::Up:
-          if(m_state == GameState::Title || m_state == GameState::Options) // might need to add the paused games stat here, too
+          if(m_state == GameState::Title || m_state == GameState::Options) // might need to add the paused games state here, too
           {
             m_navigateMenu = true;
             m_menuDirection = "Up";
           }
           else if(m_state == GameState::GamePlay)
           {
-            m_PreviousMoveDirective = "Still"; //Reset this to Still so that key pressed logic will work when more than one key is pressed again
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            {
-              m_PlayerMoveDirective = "Right";
-            }
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-            {
-              m_PlayerMoveDirective = "Left";
-            }
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-            {
-              m_PlayerMoveDirective = "Down";
-            }
-            else
-            {
-              m_PlayerMoveDirective = "Still";
-            }
+            m_MoveDirectives.push_back(PlayerMovement::StillY);
           }
           break;
         case sf::Keyboard::Down:
@@ -216,23 +158,7 @@ void EventManager::HandleEvent(sf::Event& l_event)
           }
           else if(m_state == GameState::GamePlay)
           {
-            m_PreviousMoveDirective = "Still"; //Reset this to Still so that key pressed logic will work when more than one key is pressed again
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            {
-              m_PlayerMoveDirective = "Right";
-            }
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-            {
-              m_PlayerMoveDirective = "Left";
-            }
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-            {
-              m_PlayerMoveDirective = "Up";
-            }
-            else
-            {
-              m_PlayerMoveDirective = "Still";
-            }
+            m_MoveDirectives.push_back(PlayerMovement::StillY);
           }
           break;
         case sf::Keyboard::Enter:
@@ -241,55 +167,63 @@ void EventManager::HandleEvent(sf::Event& l_event)
         case sf::Keyboard::Right:
           if(m_state == GameState::GamePlay)
           {
-            m_PreviousMoveDirective = "Still"; //Reset this to Still so that key pressed logic will work when more than one key is pressed again
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+            m_RightButtonDown = false;
+            if(!m_LeftButtonDown)
             {
-              m_PlayerMoveDirective = "Up";
-            }
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-            {
-              m_PlayerMoveDirective = "Left";
-              m_ActionDirectives.push_back("None");
-            }
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            {
-              m_PlayerMoveDirective = "Right";
-              m_ActionDirectives.push_back("None");
-            }
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-            {
-              m_PlayerMoveDirective = "Down";
-            }
-            else
-            {
-              m_PlayerMoveDirective = "Still";
-            }
-          }
-          break;
-        case sf::Keyboard::Left:
-            if(m_state == GameState::GamePlay)
-            {
-              m_PreviousMoveDirective = "Still";//Reset this to Still so that key pressed logic will work when more than one key is pressed again
-              if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+              if(!m_MoveDirectives.empty() && !m_LeftButtonDown)
               {
-                m_PlayerMoveDirective = "Right";
-              }
-              else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-              {
-                m_PlayerMoveDirective = "Up";
-              }
-              else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-              {
-                m_PlayerMoveDirective = "Down";
+                std::replace (m_MoveDirectives.begin(), m_MoveDirectives.end(), PlayerMovement::Right, PlayerMovement::StillX);
+                std::replace(m_ActionDirectives.begin(), m_ActionDirectives.end(), PlayerAction::Walk, PlayerAction::Stop);
               }
               else
               {
-                m_PlayerMoveDirective = "Still";
+                m_MoveDirectives.push_back(PlayerMovement::StillX);
+                m_ActionDirectives.push_back(PlayerAction::Stop);
               }
             }
+          }
+        break;
+        case sf::Keyboard::Left:
+            if(m_state == GameState::GamePlay)
+            {
+              m_LeftButtonDown = false;
+              if(!m_RightButtonDown)
+              {
+                if(!m_MoveDirectives.empty())
+                {
+                  std::replace (m_MoveDirectives.begin(), m_MoveDirectives.end(), PlayerMovement::Left, PlayerMovement::StillX);
+                  std::replace(m_ActionDirectives.begin(), m_ActionDirectives.end(), PlayerAction::Walk, PlayerAction::Stop);
+                }
+                else
+                {
+                  m_MoveDirectives.push_back(PlayerMovement::StillX);
+                  m_ActionDirectives.push_back(PlayerAction::Stop);
+                }
+              }
+            }
+          break;
+          case sf::Keyboard::Space:
+            if(m_state == GameState::GamePlay)
+            {
+              if(!m_ActionDirectives.empty())
+              {
+                std::replace (m_ActionDirectives.begin(), m_ActionDirectives.end(), PlayerAction::Jump, PlayerAction::Land);
+              }
+              else { m_ActionDirectives.push_back(PlayerAction::Land); }
+            }
+          break;
+          case sf::Keyboard::A:
+            if(m_state == GameState::GamePlay)
+            {
+              if(!m_ActionDirectives.empty())
+              {
+                std::replace (m_ActionDirectives.begin(), m_ActionDirectives.end(), PlayerAction::Run, PlayerAction::Walk);
+              }
+              else { m_ActionDirectives.push_back(PlayerAction::Walk); }
+            }
+          break;
       }
       break;
-
   }
 }
 
@@ -313,8 +247,11 @@ GameState EventManager::GetState() const { return m_state; }
 
 std::string EventManager::GetMenuDirection() const { return m_menuDirection; }
 
-std::string EventManager::GetPlayerDirective() const { return m_PlayerMoveDirective; }
-std::vector<std::string> EventManager::GetPlayerActions() const { return m_ActionDirectives; };
+void EventManager::ClearMovementDirectives() { m_MoveDirectives.clear(); }
+void EventManager::ClearActionDirectives() { m_ActionDirectives.clear(); }
+
+std::vector<PlayerMovement> EventManager::GetPlayerDirectives() const { return m_MoveDirectives; }
+std::vector<PlayerAction> EventManager::GetPlayerActions() const { return m_ActionDirectives; };
 void EventManager::SetControllers()
 {
   for(int i = 0; i < sf::Joystick::Count; ++i)
@@ -336,15 +273,15 @@ void EventManager::SetControllers()
     }
   }
 
-  // if(sf::Joystick::isConnected(0))
-  // {
-  //   m_Controller1.SetIndex(0);
-  //   m_Controller1.SetName();
-  //   m_Controller1.SetDefaultButtonMap();
-  //   std::cout << "Controller " << m_Controller1.GetName() << " was found" << std::endl;
-  //   // std::cout << "Controller X Axis Postion is: " << sf::Joystick::getAxisPosition(0, sf::Joystick::X) << std::endl;
-  //   // std::cout << "Controller Y Axis Positsion is: " << sf::Joystick::getAxisPosition(0, sf::Joystick::Y) << std::endl;
-  // }
+  if(sf::Joystick::isConnected(0))
+  {
+    m_Controller1.SetIndex(0);
+    m_Controller1.SetName();
+    m_Controller1.SetDefaultButtonMap();
+    std::cout << "Controller " << m_Controller1.GetName() << " was found" << std::endl;
+    // std::cout << "Controller X Axis Postion is: " << sf::Joystick::getAxisPosition(0, sf::Joystick::X) << std::endl;
+    // std::cout << "Controller Y Axis Positsion is: " << sf::Joystick::getAxisPosition(0, sf::Joystick::Y) << std::endl;
+  }
 }
 
 void EventManager::CheckdPad()
@@ -353,7 +290,6 @@ void EventManager::CheckdPad()
   switch(m_dPadDirection)
   {
     case(dPad::Up):
-      //std::cout << "Up pushed on dpad" << std::endl;
       if(m_state == GameState::Title || m_state == GameState::Options)
       {
         m_navigateMenu = true;
@@ -361,11 +297,10 @@ void EventManager::CheckdPad()
       }
       else if(m_state == GameState::GamePlay)
       {
-        m_PlayerMoveDirective = "Up";
+        m_MoveDirectives.push_back(PlayerMovement::Up);
       }
       break;
     case(dPad::Down):
-      //std::cout << "Down pushed on dpad" << std::endl;
       if(m_state == GameState::Title || m_state == GameState::Options)
       {
         m_navigateMenu = true;
@@ -373,22 +308,35 @@ void EventManager::CheckdPad()
       }
       else if(m_state == GameState::GamePlay)
       {
-        m_PlayerMoveDirective = "Down";
+        m_MoveDirectives.push_back(PlayerMovement::Down);
       }
       break;
     case(dPad::Right):
-      //std::cout << "Right pushed on dpad" << std::endl;
       if(m_state == GameState::GamePlay)
       {
-        m_PlayerMoveDirective = "Right";
+        m_RightButtonDown = true;
+        m_LeftButtonDown = false;
+        m_MoveDirectives.push_back(PlayerMovement::Right);
+        if(!m_RunButtonDown)
+        {
+          m_ActionDirectives.push_back(PlayerAction::Walk);
+        }
+        else { m_ActionDirectives.push_back(PlayerAction::Run); }
       }
       break;
     case(dPad::Left):
-      //std::cout << "Left pushed on dpad" << std::endl;
       {
         if(m_state == GameState::GamePlay)
         {
-          m_PlayerMoveDirective = "Left";
+          m_LeftButtonDown = true;
+          m_RightButtonDown = false;
+          m_MoveDirectives.push_back(PlayerMovement::Left);
+          if(!m_RunButtonDown)
+          {
+            m_ActionDirectives.push_back(PlayerAction::Walk);
+          }
+          else { m_ActionDirectives.push_back(PlayerAction::Run); }
+
         }
       }
       break;
@@ -405,7 +353,8 @@ void EventManager::CheckdPad()
       std::cout << "Lower_Left pushed on dpad" << std::endl;
       break;
     default:
-      m_PlayerMoveDirective = "Still";
+      m_MoveDirectives.push_back(PlayerMovement::StillX);
+      m_ActionDirectives.push_back(PlayerAction::Stop);
       break;
   }
 }

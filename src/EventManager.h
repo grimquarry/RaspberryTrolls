@@ -5,6 +5,8 @@
 #include <vector>
 #include "GameState.h"
 #include "Controller.h"
+#include "PlayerMovement.h"
+#include "PlayerAction.h"
 
 enum class EventType {
   Closed = sf::Event::Closed,
@@ -34,12 +36,16 @@ public:
   bool ChangeState() const;
   bool NavigateMenu() const;
   bool MenuItemSelected() const;
+
   GameState SetState(GameState l_state);
   GameState GetState() const;
-  std::string GetMenuDirection() const;
-  std::string GetPlayerDirective() const;
-  std::vector<std::string> GetPlayerActions() const;
 
+  void ClearMovementDirectives();
+  void ClearActionDirectives();
+
+  std::string GetMenuDirection() const;
+  std::vector<PlayerMovement> GetPlayerDirectives() const;
+  std::vector<PlayerAction> GetPlayerActions() const;
 
   void SetControllers();
 
@@ -58,14 +64,11 @@ private:
 
   dPad m_dPadDirection;
 
-  std::string m_PlayerMoveDirective;
-  std::string m_PreviousMoveDirective; //Keep track of last directive for keyboard press logic
-  std::vector<std::string> m_ActionDirectives;
+  std::vector<PlayerMovement> m_MoveDirectives;
+  std::vector<PlayerAction> m_ActionDirectives;
 
-  //Private Methods
-  //This method does some cleanup of my bad user input logic for when an action changes
-  //For example when the player jumps then lands, we need to remove the jump directive
-  //and replace it with the "Land directive".  This should be used for when an action
-  //button is released after being pressed.
-  void ActionCleanup(std::string s_changeFrom, std::string s_changeTo);
+  bool m_LeftButtonDown;
+  bool m_RightButtonDown;
+  bool m_RunButtonDown;
+  bool m_JumpButtonDown;
 };

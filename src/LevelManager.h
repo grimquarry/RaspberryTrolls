@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Level.h"
+#include "Platform.h"
 
 class LevelManager
 {
@@ -8,7 +9,7 @@ public:
   LevelManager();
   ~LevelManager();
 
-  std::vector<sf::Vector2i> GetVisiblePlatforms();
+  std::vector<Platform> GetVisiblePlatforms();
 
   void BuildLevel();
 

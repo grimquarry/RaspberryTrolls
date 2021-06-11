@@ -1,784 +1,303 @@
 #include "Player.h"
 
-Player::Player()
-{
-  m_CurrentMovement = PlayerMovement::Still;
-  m_PreviousMovement = PlayerMovement::Still;
-  m_StopXDirection = PlayerMovement::Right;
-  m_AnimationAction = PlayerAction::None;
-
-  //m_PlayerTexture and m_PlayerSprite are commented out because this is now
-  //handled in the Game class construtor using the AddAnimTexture and
-  //HandleAnimTexture Player class methods.  Keeping for reference, but can remove later.
-  // m_PlayerTexture.loadFromFile("../resources/images/BucketsMovement_0.png");
-  // m_PlayerSprite.setTexture(m_PlayerTexture);
-
-  m_PlayerVelX = 0.0f;
-  m_PlayerVelY = 5.0f;
-
-  m_OnGround = false;
-  m_LeftCollision = false;
-  m_LowerLeftCollision = false;
-  m_RightCollision = false;
-  m_IsRunning = false;
-  m_IsWalking = false;
-  m_IsJumping = false;
-  m_IsLanding = false;
-  m_IgnoreJump = false;
-
-  m_MinXVelocity = 7;
-  m_MaxXVelocity = m_MinXVelocity;
-  m_MaxRunSpeed = 11;
-  m_MinYVelocity = 3.0f;
-  m_MaxYVelocity = 6.0f;
-
-
-  //Walk and Run Player Action animation iterates through the m_TxtrAnimBuff
-  //(Texture Animation Buffer).  Index 0 is for No action and indexes 1 - 13
-  //are for walking and running.  We set the iterator to 1 because that's the
-  //first frame in the animation series.
-  m_WalkAnimItr = 1;
-  m_FrameCount = 0;
-}
-
-Player::~Player() { }
-
-float Player::GetPlayerWidth()
-{
-  m_PlayerWidth = m_PlayerSprite.getGlobalBounds().width;
-  return m_PlayerWidth;
-}
-
-float Player::GetPlayerHeight()
-{
-  m_PlayerHeight = m_PlayerSprite.getGlobalBounds().height;
-  return m_PlayerHeight;
-}
-
-sf::Vector2f Player::GetPosition()
-{
-  return { m_PlayerPosX, m_PlayerPosY };
-}
-
-void Player::AddAnimTexture(std::string txtrLocation)
-{
-  if(!m_PlayerTexture.loadFromFile(txtrLocation))
+  Player::Player()
   {
-    std::cout << "Failed to load file" << std::endl;
-  }
-  else
-  {
-    m_TxtrAnimBuff.push_back(m_PlayerTexture);
-  }
-}
-
-void Player::WalkAnimation()
-{
-  if(m_WalkAnimItr < 1 || m_WalkAnimItr > 13)
-  {
-    m_WalkAnimItr = 1;
-  }
-  m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_WalkAnimItr]);
-
-  m_FrameCount++;
-  if(m_FrameCount > 60)
-  {
-    m_FrameCount = 1;
+    m_WalkAnimItr = 0;
+    m_MaxWalkVelocity = 6.0f;
+    m_MinWalkVelocity = -6.0f;
+    m_MaxRunVelocity = 10.0f;
+    m_MinRunVelocity = -10.0f;
+    m_VelocityIncrement = 0.5f;
+    m_Right = false;
+    m_Left = false;
+    m_Stop = true;
+    m_Walk = false;
+    m_Run = false;
+    m_Jump = false;
+    m_Land = false;
   }
 
-  if(m_FrameCount > 2 && m_FrameCount % 3 == 0 && m_IsRunning)
-  {
-    m_WalkAnimItr++;
-  }
-  else if(m_FrameCount > 4 && m_FrameCount % 5 == 0 && !m_IsRunning)
-  {
-    m_WalkAnimItr++;
-  }
-}
+  Player::~Player() { }
 
-void Player::HandleAnimTexture()
-{
-  /*Uncomment Below to test what's in the Actions Buffer at the point this method is called for troubleshooting*/
-  // std::cout << "_____________________________________________________________________" << std::endl;
-  // for(int i = 0; i < m_ActionsBuffer.size(); ++i)
-  // {
-  //   std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
-  // }
-  // std::cout << "_____________________________________________________________________" << std::endl;
-  std::cout << static_cast<std::underlying_type<PlayerMovement>::type>(m_CurrentMovement) << std::endl;
-  if(m_CurrentMovement == PlayerMovement::Still & !m_IsJumping)
+  void Player::SetMoveDirectives(std::vector<PlayerMovement> vMovements)
   {
-    m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+    m_MovementBuffer.clear();
+    m_MovementBuffer = vMovements;
   }
-  else if(m_IsJumping && !m_OnGround)
+  void Player::SetActionDirectives(std::vector<PlayerAction> vActions)
   {
-    //std::cout << "Jump ran" << std::endl;
-    m_PlayerSprite.setTexture(m_TxtrAnimBuff[14]);
+    m_ActionsBuffer.clear();
+    m_ActionsBuffer = vActions;
   }
-  else if(m_IsWalking && !m_IgnoreJump || m_IsRunning && !m_IgnoreJump)
+
+  void Player::Move()
   {
-    WalkAnimation();
-  }
-  else if(m_IsJumping && m_IgnoreJump)
-  {
-    if(m_CurrentMovement == PlayerMovement::Still)
-    {
-      m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
-    }
-    else if(m_IsWalking || m_IsRunning)
-    {
-      WalkAnimation();
-    }
-  }
-}
-
-void Player::SetPosition(float x, float y)
-{
-  m_PlayerPosX = x;
-  m_PlayerPosY = y;
-  m_PlayerSprite.setPosition(m_PlayerPosX, m_PlayerPosY);
-}
-
-void Player::SetPlayerMovement(PlayerMovement movement)
-{
-  m_PreviousMovement = m_CurrentMovement;
-  m_CurrentMovement = movement;
-}
-
-PlayerMovement Player::GetPlayerMovement()
-{
-  return m_CurrentMovement;
-}
-
-void Player::SetPlayerAction(PlayerAction action)
-{
-  m_ActionsBuffer.push_back(action);
-  if(action == PlayerAction::Walk)
-  {
-    m_AnimationAction = action;
-  }
-}
-void Player::ClearPlayerActions()
-{
-  m_ActionsBuffer.clear();
-}
-
-void Player::MovePlayer(float timeElapsed)
-{
-  m_PreviousPosX = m_PlayerPosX; //Needed for jump collision detection logic
-  m_PreviousPosY = m_PlayerPosY; //Needed for jump collision detection logic
-  //Account for player actions before they move
-  if(!m_ActionsBuffer.empty())
-  {
+    /*Uncomment Below to test what's in the MovemeBuffer at the point this method is called for troubleshooting*/
     // std::cout << "_____________________________________________________________________" << std::endl;
+    // for(int i = 0; i < m_MovementBuffer.size(); ++i)
+    // {
+    //   std::cout << "Movement code is: " << static_cast<std::underlying_type<PlayerMovement>::type>(m_MovementBuffer[i]) << std::endl;
+    // }
+    // std::cout << "_____________________________________________________________________" << std::endl;
+
+    /*Uncomment Below to test what's in the Actions Buffer at the point this method is called for troubleshooting*/
     // for(int i = 0; i < m_ActionsBuffer.size(); ++i)
     // {
-    //   std::cout << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
+    //   std::cout << "Action code is: " << static_cast<std::underlying_type<PlayerAction>::type>(m_ActionsBuffer[i]) << std::endl;
     // }
     // std::cout << "_____________________________________________________________________" << std::endl;
-    for(int i = 0; i < m_ActionsBuffer.size(); ++i)
+    //
+    // std::cout << "Actions Buffer Size in Player: " << m_ActionsBuffer.size() << std::endl;
+
+    //Gravity
+    vel.y += 1.0f;
+
+
+
+    for(int i = 0; i < m_MovementBuffer.size(); ++i)
     {
-      if(m_ActionsBuffer[i] == PlayerAction::Walk)
+      if(m_MovementBuffer[i] == PlayerMovement::Right)
       {
-        m_IsWalking = true;
-        m_IsRunning = false;
+        m_Right = true;
+        m_Left = false;
+        m_Stop = false;
       }
-      else if(m_ActionsBuffer[i] == PlayerAction::Run)
+      else if(m_MovementBuffer[i] == PlayerMovement::Left)
       {
-        m_IsRunning = true;
-        m_IsWalking = false;
+        m_Left = true;
+        m_Right = false;
+        m_Stop = false;
       }
-      if(m_ActionsBuffer[i] == PlayerAction::Jump)
+      else
       {
-        m_IsJumping = true;
+        m_Stop = true;
+        m_Right = false;
+        m_Left = false;
       }
-      if(m_ActionsBuffer[i] == PlayerAction::Land)
+      if(m_MovementBuffer[i] == PlayerMovement::Up)
       {
-        m_IsLanding = true;
-        m_IgnoreJump = false;
+        vel.y -= .1f;
+        if(vel.y < -5.0f) { vel.y = -5.0f; }
       }
+      else if(m_MovementBuffer[i] == PlayerMovement::Down)
+      {
+        vel.y += .1f;
+        if(vel.y > 5) { vel.y = 5.0f; }
+      }
+      else
+      {
+        StopY();
+      }
+      if(m_MovementBuffer[i] == PlayerMovement::StillX)
+      {
+        m_Stop = true;
+        m_Right = false;
+        m_Left = false;
+      }
+      if(m_MovementBuffer[i] == PlayerMovement::StillY)
+      {
+        StopY();
+      }
+    }
+
+    if(!m_ActionsBuffer.empty())
+    {
+      for(int i = 0; i < m_ActionsBuffer.size(); ++i)
+      {
+        if(m_ActionsBuffer[i] == PlayerAction::Jump && m_OnGround)
+        {
+          std::cout << "Jump is registered in Player Class" << std::endl;
+          m_Jump = true;
+        }
+        else if(m_ActionsBuffer[i] == PlayerAction::Land /*&& !m_OnGround*/)
+        {
+          m_Land = true;
+          m_Jump = false;
+          std::cout << "THIS RAN!" << std::endl;
+          vel.y += 10.0f;
+        }
+
+        if(m_ActionsBuffer[i] == PlayerAction::Run)
+        {
+          m_Run = true;
+          m_Walk = false;
+        }
+        else if(m_ActionsBuffer[i] == PlayerAction::Walk)
+        {
+          m_Walk = true;
+          m_Run = false;
+        }
+        else if (m_ActionsBuffer[i] == PlayerAction::Stop)
+        {
+          m_Walk = false;
+          m_Run = false;
+        }
+
+      }
+    }
+
+    if(m_Right && m_Walk)
+    {
+      vel.x += m_VelocityIncrement;
+      if(vel.x > m_MaxWalkVelocity) { vel.x = m_MaxWalkVelocity; }
+    }
+    else if(m_Left && m_Walk)
+    {
+      vel.x -= m_VelocityIncrement;
+      if(vel.x < m_MinWalkVelocity) {vel.x = m_MinWalkVelocity; }
+    }
+    else if(m_Stop)
+    {
+      StopX();
+    }
+
+    if(m_Jump)
+    {
+      vel.y = -37.0f;
+    }
+    else if(m_Land)
+    {
+      vel.y += 0.9f;
+    }
+
+    if(m_Run)
+    {
+      if(m_Right)
+      {
+        vel.x += m_VelocityIncrement;
+        if(vel.x > m_MaxRunVelocity) { vel.x = m_MaxRunVelocity; }
+      }
+      else if(m_Left)
+      {
+        vel.x -= m_VelocityIncrement;
+        if(vel.x < m_MinRunVelocity) { vel.x = m_MinRunVelocity; }
+      }
+
     }
   }
 
-  if(m_IsJumping)
+  void Player::StopX()
   {
-    if(!m_IgnoreJump)
-    {
-      if(m_IsRunning && m_OnGround)
-      {
-        m_PlayerVelY = -16;
-        m_IgnoreJump = true;
-      }
-      else if(m_IsWalking && m_OnGround)
-      {
-        m_PlayerVelY = -11;
-        m_IgnoreJump = true;
-      }
-    }
-    if(m_IsLanding)
-    {
-      m_PlayerVelY += 0.5;
-      m_IgnoreJump = true;
-    }
-
-    if(m_OnGround && m_IsLanding)
-    {
-      m_PlayerVelY = m_MinYVelocity;
-      m_IsJumping = false;
-      m_IsLanding = false;
-      m_IgnoreJump = false;
-    }
-    m_PlayerPosY += (m_PlayerVelY * timeElapsed);
+    if(vel.x < 1.0f && vel.x > -1.0f) {vel.x = 0.0f; } //Check condition for setting velocity to 0 first
+    else if(vel.x > 0.0f) { vel.x -= .5f; }
+    else if(vel.x < 0.0f) {vel.x += .5f; }
   }
 
-
-  if(m_IsRunning)
+  void Player::StopY()
   {
-    m_MaxXVelocity = m_MaxRunSpeed;
+    if(vel.y > 0.0f) { vel.y -= .1f; }
+    else if(vel.y < 0.0f) {vel.y += .1f; }
+    else if(vel.y < 0.9f && vel.y > -0.9f) { vel.y = 0.0f; }
   }
-  else if(!m_IsRunning)
+
+  void Player::SetOnGround(bool b) { m_OnGround = b; }
+
+  bool Player::GetOnGround() { return m_OnGround; }
+
+  sf::Vector2f Player::GetSize() const
   {
-    if(m_MaxXVelocity > m_MaxXVelocity)
+    return { m_PlayerSprite.getGlobalBounds().width, m_PlayerSprite.getGlobalBounds().height };
+  }
+
+  sf::Vector2f Player::GetPosition() const
+  {
+    return m_Position;
+  }
+
+  void Player::AddAnimTexture(std::string txtrLocation)
+  {
+    if(!m_PlayerTexture.loadFromFile(txtrLocation))
     {
-      m_MaxXVelocity -= .5f;
+      std::cout << "Failed to load file" << std::endl;
     }
     else
     {
-      m_MaxXVelocity = m_MinXVelocity;
+      m_TxtrAnimBuff.push_back(m_PlayerTexture);
     }
   }
 
-  //Give player new position based on directive
-  if(m_CurrentMovement == PlayerMovement::Right)
+  void Player::WalkAnimation()
   {
-    m_StopXDirection = PlayerMovement::Right;
-    if(m_PreviousMovement != PlayerMovement::Right)
+    if(m_WalkAnimItr < 1 || m_WalkAnimItr > 13)
     {
+      m_WalkAnimItr = 1;
+    }
+    m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_WalkAnimItr]);
+
+    m_FrameCount++;
+    if(m_FrameCount > 60)
+    {
+      m_FrameCount = 1;
+    }
+
+    if(m_FrameCount > 2 && m_FrameCount % 3 == 0 && m_Run)
+    {
+      m_WalkAnimItr++;
+    }
+    else if(m_FrameCount > 4 && m_FrameCount % 5 == 0 && !m_Run)
+    {
+      m_WalkAnimItr++;
+    }
+  }
+
+  void Player::HandleAnimTexture()
+  {
+    /*Uncomment below to get movement and action states for debugging at this point*/
+    // std::cout << "m_Stop: " << m_Stop << std::endl;
+    // std::cout << "m_Jump: " << m_Jump << std::endl;
+    // std::cout << "m_Land: " << m_Land << std::endl;
+    // std::cout << "m_Right: " << m_Right << std::endl;
+    // std::cout << "m_Left: " << m_Left << std::endl;
+    // std::cout << "m_Walk: " << m_Walk << std::endl;
+    // std::cout << "m_Run: " << m_Run << std::endl;
+    // std::cout << "m_OnGround: " << m_OnGround << std::endl;
+
+    if(m_Land && m_OnGround)
+    {
+      m_Land = false;
+    }
+
+    if(m_Right)
+    {
+
       m_PlayerSprite.setScale({1, 1});
       m_PlayerSprite.setOrigin(0.f, 0.f);
+
     }
-    if(!m_RightCollision)
+    else if(m_Left)
     {
-      ChangeXVelocity();
-      m_PlayerPosX += (m_PlayerVelX * timeElapsed);
-    }
-  }
-  else if(m_CurrentMovement == PlayerMovement::Left)
-  {
-    m_StopXDirection = PlayerMovement::Left;
-    if(m_PreviousMovement != PlayerMovement::Left)
-    {
+
       m_PlayerSprite.setScale({-1, 1});
-      m_PlayerSprite.setOrigin((float)m_PlayerWidth, 0.0f); //Change origin for smoother animation when changing direction from right to left.
+      m_PlayerSprite.setOrigin((float)m_PlayerSprite.getGlobalBounds().width, 0.0f); //Change origin for smoother animation when changing direction from right to left.
     }
-    if(!m_LeftCollision)
-    {
-      ChangeXVelocity();
-      m_PlayerPosX -= (m_PlayerVelX * timeElapsed);
-    }
+
+    if(m_Jump || m_Land) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[14]); }
+    else if(m_Stop && !m_Jump || m_Stop && !m_Land) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]); }
+    else if(m_Walk && !m_Jump || m_Run && !m_Jump) { if(!m_Jump || m_Land) { WalkAnimation(); } }
+
+    //Because this code is set to register button pushes only once, we need to set the original jump directive to false
+    //after it's pushed.  Otherwise there's no other logic to stop the player from decreasing movement in the y axis
+    //and the player will just keep rising into the air... like he just don't care.
+    if(m_Jump) { m_Jump = false; m_Land = true; }
   }
-  //Lines below commented out because they shouldn't do anything at this point (revist when duck and climb directives are created)
-  // else if(m_CurrentMovement == PlayerMovement::Up)
-  // {
-  //   m_PlayerPosY -= (m_PlayerVelY * timeElapsed);
-  // }
-  // else if(m_CurrentMovement == PlayerMovement::Down)
-  // {
-  //   if(m_IsRunning)
-  //   {
-  //     m_PlayerVelY += 0.90f;
-  //   }
-  //   else
-  //   {
-  //     m_PlayerVelY += 0.50f;
-  //   }
-  //   m_PlayerPosY += (m_PlayerVelY * timeElapsed);
-  // }
-  else if (m_CurrentMovement == PlayerMovement::Still)
+
+  void Player::SetPosition(float x, float y)
   {
-    if(m_IsJumping)
-    {
-      if (m_PreviousMovement == PlayerMovement::Right)
-      {
-        if(!m_RightCollision)
-        {
-          m_PlayerPosX += (m_PlayerVelX * timeElapsed);
-        }
-      }
-      else if(m_PreviousMovement == PlayerMovement::Left)
-      {
-        if(!m_LeftCollision)
-        {
-          m_PlayerPosX -= m_PlayerVelX * timeElapsed;
-        }
-      }
-      else if(m_PreviousMovement == PlayerMovement::Still)
-      {
-        m_PlayerPosX = m_PlayerPosX;
-      }
-    }
-
-    if(m_PlayerVelX != 0.f && !m_LeftCollision && !m_RightCollision)
-    {
-      if(m_PreviousMovement == PlayerMovement::Left)
-      {
-        m_StopXDirection = PlayerMovement::Left; //Ummm.... I don't think this is working?  I don't remember this but it seems fine now
-      }
-      else if(m_PreviousMovement == PlayerMovement::Right)
-      {
-        m_StopXDirection = PlayerMovement::Right;
-      }
-
-      m_PlayerVelX -= 0.5f;
-
-      if(m_StopXDirection == PlayerMovement::Left)
-      {
-        m_PlayerPosX -= m_PlayerVelX * timeElapsed;
-      }
-      else if(m_StopXDirection == PlayerMovement::Right)
-      {
-        m_PlayerPosX += m_PlayerVelX * timeElapsed;
-      }
-      else if(m_LeftCollision || m_RightCollision)
-      {
-        m_PlayerVelX = 0;
-      }
-    }
+    m_Position.x = x;
+    m_Position.y = y;
+    m_PlayerSprite.setPosition(m_Position.x, m_Position.y);
   }
-  //Gravity
-  if(!m_OnGround)
+
+  void Player::SetPosition(sf::Vector2f pos)
   {
-    if(m_IsRunning)
-    {
-      m_PlayerVelY += 0.90f;
-    }
-    else
-    {
-      m_PlayerVelY += 0.50f;
-    }
-    m_PlayerPosY += (m_PlayerVelY * timeElapsed);
+    m_Position = pos;
+    m_PlayerSprite.setPosition(m_Position);
   }
-  //Put player in the new postion
-  SetPosition(m_PlayerPosX, m_PlayerPosY);
-}
 
-void Player::CollisionCheck(std::vector<sf::Vector2i> collidableObjects)
-{
-  m_OnGround = false;
-  m_LeftCollision = false;
-  m_RightCollision = false;
-  m_LowerLeftCollision = false;
-  //int testing = -1;
-  int objectWidth;
-  int objectHeight;
-  int objectStartX;
-  int objectEndX;
-  int objectStartY;
-  int objectEndY;
-  for(int i = 0; i < collidableObjects.size(); i++)
+
+  void Player::Draw(Window& l_window)
   {
-    objectWidth = 200; //This variable and objectHeight are specific to nectarine branch platform sprites
-    objectHeight = 75;  //I will likely need to rework things to fit other platform sizes (25x25 for example)
-    objectStartX = collidableObjects[i].x;
-    objectEndX = collidableObjects[i].x + objectWidth;
-    objectStartY = collidableObjects[i].y;
-    objectEndY = collidableObjects[i].y + objectHeight;
-    //bool testTrigger = false;
-    //std::cout << "*************************************************************" << std::endl;
-    switch(m_CurrentMovement){
-      case PlayerMovement::Right:
-      //Check Right side collisions while jumping and adjust accordingly
-      if(m_IsJumping || m_IsLanding)
-      {
-        if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
-        m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
-        {
-          //When player is under the platform.
-          if(m_PlayerPosY < objectEndY && m_PreviousPosY > objectEndY)
-          {
-            std::cout << "Jump Head Collision Right Registered" << std::endl;
-            m_PlayerPosY = objectEndY + .5; //+.5 is needed to offset float when comapring to an int
-          }
-          //When player collides into the platform from the right
-          else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PreviousPosX < objectStartX)
-          {
-            std::cout << "Right facing jump collistion registered" << std::endl;
-            if(m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY ||
-              m_PlayerPosY + (m_PlayerWidth / 2) > objectStartY && m_PlayerPosY + (m_PlayerWidth / 2) < objectEndY ||
-              m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
-              {
-                //m_PlayerVelX = 0;
-                m_PlayerPosX = objectStartX;
-                m_RightCollision = true;
-                SetPlayerMovement(PlayerMovement::Still);
-              }
-          }
-        }
-      }
-      //Account for collsions on player's lower right when landing from a jump
-      if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
-        m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
-        {
-          std::cout << "Lower right landing collision registered" << std::endl;
-            // std::cout << "m_IgnoreJump is " << m_IgnoreJump << std::endl;
-            // std::cout << "m_IsJumping is " << m_IsJumping << std::endl;
-            // std::cout << "m_IsLanding is " << m_IsLanding << std::endl;
-            // std::cout << "m_IsWalking is " << m_IsWalking << std::endl;
-            // std::cout << "m_IsRunning is " << m_IsRunning << std::endl;
-            // std::cout << "m_OnGround is " << m_OnGround << std::endl;
-          //m_PlayerVelX = 0;
-          //m_RightCollision = true;
-          //m_OnGround = true;
-          //This condition is intended to stop moving the player on the Y axisis when colliding into the Platform
-          //from the right rather than from the top.  Players will still be brought up to the platfrom Y coordinate
-          //when their feet Y coordinate is between the start of the platform and 30 pixels from the start of the
-          //platform.  This isn't ideal, but anything lower than 30 causes problems when landing on the top of the
-          //platform rather than colliding into it from the side.
-          if(m_PreviousPosY < m_PlayerPosY && m_PlayerPosY + m_PlayerHeight < objectStartY + 30)
-          {
-            std::cout << "This ran" << std::endl;
-            m_PlayerPosY = objectStartY - m_PlayerHeight;
-          }
-          //m_PlayerPosY = objectStartY - m_PlayerHeight;
-        }
-
-      //Foot Collision
-      if(m_PlayerPosX + m_PlayerWidth < objectEndX && m_PlayerPosX + m_PlayerWidth > objectStartX &&
-        m_PlayerPosY + m_PlayerHeight < objectEndY && m_PlayerPosY + m_PlayerHeight > objectStartY)
-        {
-          std::cout << "Right Foot collision registered" << std::endl;
-          m_PlayerVelX = 0;
-          m_RightCollision = true;
-          m_PlayerPosX = objectStartX - m_PlayerWidth;
-          SetPlayerMovement(PlayerMovement::Still);
-        }
-      //Head Collision
-      else if(m_PlayerPosX + m_PlayerWidth < objectEndX && m_PlayerPosX + m_PlayerWidth > objectStartX &&
-        m_PlayerPosY < objectEndY && m_PlayerPosY > objectStartY)
-        {
-          std::cout << "Right side head collision detected" << std::endl;
-          std::cout << "Player X Position: " << m_PlayerPosX + m_PlayerWidth << std::endl;
-          std::cout << "Platform x Start Postion: " << objectStartX << std::endl;
-          std::cout << "Platform x End Postion: " << objectEndX << std::endl;
-          std::cout << "Player Y Position: " << m_PlayerPosY + m_PlayerHeight << std::endl;
-          std::cout << "Platform Start Y Position: " << objectStartY << std::endl;
-          std::cout << "Platform End Y Position: " << objectEndY << std::endl;
-          m_PlayerVelX = 0;
-          m_PlayerPosX = objectStartX - m_PlayerWidth;
-          m_RightCollision = true;
-          SetPlayerMovement(PlayerMovement::Still);
-        }
-      //Body Collision
-      else if(m_PlayerPosX + m_PlayerWidth < objectEndX && m_PlayerPosX + m_PlayerWidth > objectStartX &&
-        m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY)
-        {
-          std::cout << "Right side Body Collision detected" << std::endl;
-              std::cout << "Player X Position: " << m_PlayerPosX + m_PlayerWidth << std::endl;
-              std::cout << "Platform x Start Postion: " << objectStartX << std::endl;
-              std::cout << "Platform x End Postion: " << objectEndX << std::endl;
-              std::cout << "Player Y Position: " << m_PlayerPosY + m_PlayerHeight << std::endl;
-              std::cout << "Platform Start Y Position: " << objectStartY << std::endl;
-              std::cout << "Platform End Y Position: " << objectEndY << std::endl;
-          //m_PlayerVelX = 0;
-          m_RightCollision = true;
-          m_PlayerPosX = objectStartX - m_PlayerWidth;
-          SetPlayerMovement(PlayerMovement::Still);
-          //m_CurrentMovement = PlayerMovement::Still;
-        }
-
-      case PlayerMovement::Left:
-      //Check Leftside collisions while jumping and adjust accordingly
-        if(m_IsJumping || m_IsLanding)
-        {
-          if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX < objectEndX &&
-          m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
-          {
-            //When player is under the platform.
-            if(m_PlayerPosY < objectEndY && m_PreviousPosY > objectEndY)
-            {
-              std::cout << "Jump Head Collision Left Registered" << std::endl;
-              std::cout << "Player X Position: " << m_PlayerPosX + m_PlayerWidth << std::endl;
-              std::cout << "Platform x Start Postion: " << objectStartX << std::endl;
-              std::cout << "Platform x End Postion: " << objectEndX << std::endl;
-              std::cout << "Player Y Position: " << m_PlayerPosY << std::endl;
-              std::cout << "Platform Start Y Position: " << objectStartY << std::endl;
-              std::cout << "Platform End Y Position: " << objectEndY << std::endl;
-              m_PlayerPosY = objectEndY + .5f;
-            }
-            //When player collides into the platform from the left
-            else if(m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY ||
-              m_PlayerPosY + (m_PlayerWidth / 2) > objectStartY && m_PlayerPosY + (m_PlayerWidth / 2) < objectEndY ||
-              m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
-            {
-              std::cout << "Left facing jump collistion registered" << std::endl;
-              //m_PlayerVelX = 0;
-              m_PlayerPosX = objectEndX;
-              m_LeftCollision = true;
-              SetPlayerMovement(PlayerMovement::Still);
-            }
-          }
-        }
-        //Account for collsions on player's lower left when landing from a jump
-        if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
-          m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
-          {
-            std::cout << "Lower left landing collision registered" << std::endl;
-            //m_PlayerVelX = 0;
-            //m_LeftCollision = true;
-            //This condition is intended to stop moving the player on the Y axisis when colliding into the Platform
-            //from the right rather than from the top.  Players will still be brought up to the platfrom Y coordinate
-            //when their feet Y coordinate is between the start of the platform and 30 pixels from the start of the
-            //platform.  This isn't ideal, but anything lower than 30 causes problems when landing on the top of the
-            //platform rather than colliding into it from the side.
-            if(m_PreviousPosY < m_PlayerPosY && m_PlayerPosY + m_PlayerHeight < objectStartY + 30)
-            {
-              m_PlayerPosY = objectStartY - m_PlayerHeight;
-            }
-          }
-
-        //Foot Collision
-        if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
-          m_PlayerPosY + m_PlayerHeight < objectEndY && m_PlayerPosY + m_PlayerHeight > objectStartY)
-          {
-            std::cout << "Left Foot collision registered" << std::endl;
-            std::cout << "Player X Position: " << m_PlayerPosX << std::endl;
-            std::cout << "Platform x Start Postion: " << objectStartX << std::endl;
-            std::cout << "Platform x End Postion: " << objectEndX << std::endl;
-            std::cout << "Player Y Position: " << m_PlayerPosY + m_PlayerHeight << std::endl;
-            std::cout << "Platform Start Y Position: " << objectStartY << std::endl;
-            std::cout << "Platform End Y Position: " << objectEndY << std::endl;
-            m_PlayerVelX = 0;
-            m_LeftCollision = true;
-            m_PlayerPosX = objectEndX;
-          }
-        //Head Collision
-        else if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
-          m_PlayerPosY < objectEndY && m_PlayerPosY > objectStartY)
-          {
-            std::cout << "Left side head collision detected" << std::endl;
-            m_PlayerVelX = 0;
-            m_PlayerPosX = objectEndX + .5f;
-            m_LeftCollision = true;
-            SetPlayerMovement(PlayerMovement::Still);
-            //m_CurrentMovement = PlayerMovement::Still;
-          }
-        //Body Collision
-        else if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
-          m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY)
-          {
-            std::cout << "Left side Body Collision detected" << std::endl;
-            std::cout << "Player X Position: " << m_PlayerPosX << std::endl;
-            std::cout << "Platform x Start Postion: " << objectStartX << std::endl;
-            std::cout << "Platform x End Postion: " << objectEndX << std::endl;
-            std::cout << "Player Y Midpiont Position: " << m_PlayerPosY + (m_PlayerHeight / 2) << std::endl;
-            std::cout << "Platform Start Y Position: " << objectStartY << std::endl;
-            std::cout << "Platform End Y Position: " << objectEndY << std::endl;
-            m_PlayerVelX = 0;
-            m_LeftCollision = true;
-            m_PlayerPosX = objectEndX;
-            SetPlayerMovement(PlayerMovement::Still);
-            //m_CurrentMovement = PlayerMovement::Still;
-          }
-      break;
-      case PlayerMovement::Up:
-        //Account for collisions on the player's upper right
-        if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
-          m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
-          {
-            m_PlayerPosY = objectEndY;
-          }
-        //Account for collisions on the player's upper left
-        else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
-          m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
-          {
-            m_PlayerPosY = objectEndY;
-          }
-      break;
-      case PlayerMovement::Down:
-        //Account for collsions on player's lower left
-        if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
-          m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
-          {
-            m_PlayerPosY = objectStartY - m_PlayerHeight;
-          }
-        //Account for collsions on player's lower right
-        else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
-          m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
-          {
-            m_PlayerPosY = objectStartY - m_PlayerHeight;
-          }
-      break;
-      case PlayerMovement::Still:
-      //The code for this below was lifted from both the PlayerMovement::Right and PlayerMovement::Left cases above.
-      //Probably not the most eloquent solution, but it's necessary because the player can still be moving
-      //when they're "standing still" (due to changing velocity to give the effect of player momentum).  I suspect
-      //this could be refactored to be more effecient, but don't currently have good ideas on that, so
-      //I'll leave as is for now, and maybe revisit.
-      //Check Leftside collisions while jumping and adjust accordingly
-        if(m_IsJumping || m_IsLanding)
-        {
-          if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
-          m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
-          {
-            //When player is under the platform.
-            if(m_PlayerPosY < objectEndY && m_PreviousPosY > objectEndY)
-            {
-              std::cout << "Still left facing jump head collision" << std::endl;
-              m_PlayerPosY = objectEndY + .5;
-            }
-            //When player collides into the platform from the left
-            else if(m_PlayerPosX < objectEndX && m_PreviousPosX > objectEndX)
-            {
-              std::cout << "Still jump colliding from left" << std::endl;
-              m_PlayerPosX = objectEndX;
-              m_LeftCollision = true;
-            }
-          }
-        }
-        //Account for collsions on player's lower left when landing from a jump
-        if(m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX &&
-          m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
-          {
-            std::cout << "Still jump landing facing left" << std::endl;
-            m_LeftCollision = true;
-            m_PlayerPosY = objectStartY - m_PlayerHeight;
-          }
-      //Left Foot Collision
-      if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
-        m_PlayerPosY + m_PlayerHeight < objectEndY && m_PlayerPosY + m_PlayerHeight > objectStartY)
-        {
-          std::cout << "Still left facing foot collision" << std::endl;
-          m_PlayerPosX = objectEndX;
-          m_MaxXVelocity = m_MinXVelocity;
-        }
-      //Left Head Collision
-      else if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
-        m_PlayerPosY < objectEndY && m_PlayerPosY > objectStartY)
-        {
-          std::cout << "Still left facing head collision" << std::endl;
-          m_PlayerPosX = objectEndX;
-          m_MaxXVelocity = m_MinXVelocity;
-        }
-      //Left Body Collision
-      else if(m_PlayerPosX < objectEndX && m_PlayerPosX > objectStartX &&
-        m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY)
-        {
-          std::cout << "Still left facing body collision" << std::endl;
-          std::cout << "Player X Position: " << m_PlayerPosX << std::endl;
-          std::cout << "Platform x Start Postion: " << objectStartX << std::endl;
-          std::cout << "Platform x End Postion: " << objectEndX << std::endl;
-          std::cout << "Player Y Position: " << m_PlayerPosY + m_PlayerHeight << std::endl;
-          std::cout << "Platform Start Y Position: " << objectStartY << std::endl;
-          std::cout << "Platform End Y Position: " << objectEndY << std::endl;
-          m_PlayerPosX = objectEndX;
-          m_MaxXVelocity = m_MinXVelocity;
-        }
-
-        //Check for Right side collisions while jumping and adjust accordingly
-        if(m_IsJumping || m_IsLanding)
-        {
-          if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
-            m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
-          {
-             //When player is under the platform.
-            if(m_PlayerPosY < objectEndY && m_PreviousPosY > objectEndY)
-            {
-              m_PlayerPosY = objectEndY + 5;
-            }
-            //When player collides into the platform from the right
-            else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PreviousPosX + m_PlayerWidth < objectStartX)
-            {
-              m_PlayerPosX = objectStartX - 5;
-            }
-          }
-          //Account for collsions on player's lower right when landing from a jump
-          if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX &&
-            m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
-            {
-              m_PlayerPosY = objectStartY - m_PlayerHeight;
-            }
-        }
-
-        //Right Foot Collision
-        if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX
-          && m_PlayerPosY + m_PlayerHeight > objectStartY && m_PlayerPosY + m_PlayerHeight < objectEndY)
-          {
-            m_PlayerPosX = objectStartX - m_PlayerWidth;
-            m_MaxXVelocity = m_MinXVelocity;
-          }
-        //Right Head Collision
-        else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX
-        && m_PlayerPosY > objectStartY && m_PlayerPosY < objectEndY)
-        {
-          m_PlayerPosX = objectStartX - m_PlayerWidth;
-          m_MaxXVelocity = m_MinXVelocity;
-        }
-        //Right Body Collision (player midpoint, which is needed because the player can be taller than the platform)
-        else if(m_PlayerPosX + m_PlayerWidth > objectStartX && m_PlayerPosX + m_PlayerWidth < objectEndX
-        && m_PlayerPosY + (m_PlayerHeight / 2) > objectStartY && m_PlayerPosY + (m_PlayerHeight / 2) < objectEndY)
-        {
-          m_PlayerPosX = objectStartX - m_PlayerWidth;
-          m_MaxXVelocity = m_MinXVelocity;
-        }
-      break;
-    }
-
-    //std::cout << "************************************************************************" << std::endl;
-
-    //Determine if player is on ground or not.  m_OnGround is used/returned by the bool OnGround method
-    if(objectStartY == m_PlayerPosY + m_PlayerHeight && m_PlayerPosX > objectStartX && m_PlayerPosX < objectEndX)
-    {
-      //std::cout << "This condition met" << std::endl;
-      m_OnGround = true;
-    }
-    else if(objectStartY == m_PlayerPosY + m_PlayerHeight && m_PlayerPosX + m_PlayerWidth < objectEndX && m_PlayerPosX + m_PlayerWidth > objectStartX)
-    {
-      //std::cout << "Running" << std::endl;
-      m_OnGround = true;
-    }
-    //Determine if player is flush with a platfrom to his Left or Right.
-    // if(m_PlayerPosX == objectEndX && m_PlayerPosY < objectEndY && m_PlayerPosY > objectStartY)
-    // {
-    //   m_LeftCollision = true;
-    // }
-    // else if(m_PlayerPosX + m_PlayerWidth == objectStartX)
-    // {
-    //   m_RightCollision = true;
-    // }
+    m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+    HandleAnimTexture();
+    l_window.Draw(m_PlayerSprite);
   }
-  SetPosition(m_PlayerPosX, m_PlayerPosY);
-}
-
-bool Player::SideCollision()
-{
-  if(m_RightCollision || m_LeftCollision)
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-
-bool Player::OnGround()
-{
-  return m_OnGround;
-}
-
-void Player::Draw(Window& l_window)
-{
-  int index = (int)GetPlayerMovement();
-  //m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
-  HandleAnimTexture();
-  l_window.Draw(m_PlayerSprite);
-}
-
-void Player::ChangeXVelocity()
-{
-  m_PlayerVelX += 0.5f;
-  if(m_PlayerVelX > m_MaxXVelocity)
-  {
-    m_PlayerVelX = m_MaxXVelocity;
-  }
-}

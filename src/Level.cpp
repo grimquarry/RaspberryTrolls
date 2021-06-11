@@ -1,43 +1,13 @@
 #include "Level.h"
 #include <iostream>
 
-Level::Level()
+Level::Level() { }
+
+Level::~Level() { }
+
+std::vector<Platform> Level::GetVisiblePlatforms() const
 {
-  // if(!texture.loadFromFile("../resources/images/nectarineBranch_2.png"))
-  // {
-  //   std::cout << "Failed to load file" << std::endl;
-  // }
-  // sprite.setTexture(texture);
-  // platform.LoadTexture("../resources/images/nectarineBranch_2.png");
-  // platform.SetTexture();
-  //AddPlatformSprite("../resources/images/nectarineBranch_2.png");
-
-  // sLevelMap += "-...............................................................";
-  // sLevelMap += ".--.............................................................";
-  // sLevelMap += "...---..........................................................";
-  // sLevelMap += "......----......................................................";
-  // sLevelMap += "...---..........................................................";
-  // sLevelMap += ".--.............................................................";
-  // sLevelMap += "-...............................................................";
-  // sLevelMap += ".--.............................................................";
-  // sLevelMap += "...---..........................................................";
-  // sLevelMap += "......----......................................................";
-  // sLevelMap += "................................................................";
-  // sLevelMap += "-...............................................................";
-  // sLevelMap += "--..............................................................";
-  // sLevelMap += "--.---..........................................................";
-  // std::cout << sLevelMap << std::endl;
-
-}
-
-Level::~Level()
-{
-
-}
-
-std::vector<sf::Vector2i> Level::GetVisiblePlatforms()
-{
-  return m_visibleTileCoords;
+  return m_VisibleTiles;
 }
 
 void Level::LoadLevelMap(std::string mapPath)
@@ -51,20 +21,8 @@ void Level::LoadLevelMap(std::string mapPath)
     std::cout << line << std::endl;
     m_LevelMap += line;
   }
-  // if(!m_LevelFile)
-  // {
-  //   std::cout << "This is the fucking issue" << std::endl;
-  // }
-  // while(m_LevelFile)
-  // {
-  //   getline(m_LevelFile, m_LevelMap);
-  // }
-  // std::cout << "What" << m_LevelMap;
+
   m_LevelFile.close();
-
-  //m_LevelMap.erase(std::remove(m_LevelMap.begin(), m_LevelMap.end(), '\n'), m_LevelMap.end());
-
-  //std::cout << m_LevelMap << std::endl;
 }
 
 void Level::AddPlatformSprite(std::string imgPath)
@@ -81,7 +39,7 @@ void Level::Draw(Window& l_window, sf::View view)
   int minXView = view.getCenter().x - (l_window.GetSize().x / 2) - 200;
   int maxXView = view.getCenter().x + (l_window.GetSize().x / 2);
 
-  m_visibleTileCoords.clear();
+  m_VisibleTiles.clear();
   for(int y = 0; y < 14; y++)
   {
     for(int x = 0; x < 64; x++)
@@ -91,10 +49,7 @@ void Level::Draw(Window& l_window, sf::View view)
       if(m_LevelMap[tileIndex] == '0' && platformLocationX > minXView && platformLocationX < maxXView)
       {
         m_PlatformSprites[0].SetPosition(platformLocationX, platformLocationY);
-        m_visibleTileCoords.push_back({platformLocationX, platformLocationY});
-        //std::cout << "\nX: " << x*200 << "\nY: " << y * 75 << std::endl;
-        //std::cout << tileIndex << std::endl;
-        //l_window.Draw(sprite);
+        m_VisibleTiles.push_back(m_PlatformSprites[0]);
         m_PlatformSprites[0].Draw(l_window);
       }
       tileIndex++;

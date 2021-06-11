@@ -61,7 +61,7 @@ int Controller::ButtonPushed(std::string button)
   return -1;  //Return -1 if button index isn't found
 }
 
-//This may not be the best approach below, and doesn't work so well with controllers (as opposed to game pads, those seem 
+//This may not be the best approach below, and doesn't work so well with controllers (as opposed to game pads, those seem
 //to work just fine).  Looks like you should spend some time looking at the JoyStickMoveEvent:
 //https://www.sfml-dev.org/documentation/2.5.1/structsf_1_1Event_1_1JoystickMoveEvent.php
 dPad Controller::GetDPadDirection()

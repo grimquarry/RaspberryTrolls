@@ -1,52 +1,43 @@
 #pragma once
-
 #include <iostream>
-#include <vector>
-
 #include <SFML/Graphics.hpp>
-
 #include "Window.h"
-
-enum class PlayerMovement
-{
-  Still, Left, Right, Up, Down
-};
-
-enum class PlayerAction
-{
-  Jump, Land, Attack, Run, Walk, None
-};
+#include "PlayerMovement.h"
+#include "PlayerAction.h"
 
 class Player
 {
 public:
+
   Player();
+
   ~Player();
 
+  void SetMoveDirectives(std::vector<PlayerMovement> vMovements);
+  void SetActionDirectives(std::vector<PlayerAction> vActions);
+
+  void Move();
+  void StopX();
+  void StopY();
+
+  void SetOnGround(bool b);
+  bool GetOnGround();
+
+  sf::Vector2f vel;
+
+  sf::Vector2f GetPosition() const;
+
   void AddAnimTexture(std::string txtrLocation);
+
+  sf::Vector2f GetSize() const;
+
   void WalkAnimation();
+
   void HandleAnimTexture();
 
-  float GetPlayerWidth();
-  float GetPlayerHeight();
-
   void SetPosition(float x, float y);
-  sf::Vector2f GetPosition();
 
-  void SetPlayerMovement(PlayerMovement movement);
-
-  PlayerMovement GetPlayerMovement();
-
-  void SetPlayerAction(PlayerAction action);
-  void ClearPlayerActions();
-
-  void MovePlayer(float timeElapsed);
-
-  void CollisionCheck(std::vector<sf::Vector2i> collidableObjects);
-
-  bool SideCollision();
-
-  bool OnGround();
+  void SetPosition(sf::Vector2f pos);
 
   void Draw(Window& l_window);
 
@@ -56,37 +47,22 @@ protected:
   std::vector<sf::Texture> m_TxtrAnimBuff;
 
 private:
-  PlayerMovement m_CurrentMovement;
-  PlayerMovement m_PreviousMovement;
-  PlayerMovement m_StopXDirection;
-  PlayerAction m_AnimationAction;
-  float m_PlayerPosX;
-  float m_PlayerPosY;
-  float m_PlayerVelX;
-  float m_PlayerVelY;
-  float m_PlayerWidth;
-  float m_PlayerHeight;
-  float m_PreviousPosX;
-  float m_PreviousPosY;
-
-  bool m_OnGround;
-  bool m_IsRunning;
-  bool m_IsWalking;
-  bool m_IsJumping;
-  bool m_IsLanding;
-  bool m_IgnoreJump;
-  bool m_LeftCollision;
-  bool m_RightCollision;
-  bool m_LowerLeftCollision;
-  std::vector<PlayerAction> m_ActionsBuffer;
-
-  void ChangeXVelocity();
-  float m_MaxXVelocity;
-  float m_MinXVelocity;
-  float m_MaxYVelocity;
-  float m_MinYVelocity;
-  float m_MaxRunSpeed;
-
+  sf::Vector2f m_Position;
   int m_WalkAnimItr;
   int m_FrameCount;
+  std::vector<PlayerMovement> m_MovementBuffer;
+  std::vector<PlayerAction> m_ActionsBuffer;
+  float m_MaxWalkVelocity;
+  float m_MinWalkVelocity;
+  float m_MaxRunVelocity;
+  float m_MinRunVelocity;
+  float m_VelocityIncrement;
+  bool m_OnGround;
+  bool m_Jump;
+  bool m_Land;
+  bool m_Right;
+  bool m_Left;
+  bool m_Stop;
+  bool m_Run;
+  bool m_Walk;
 };

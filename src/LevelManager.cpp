@@ -19,7 +19,7 @@ void LevelManager::BuildLevel()
 
 }
 
-std::vector<sf::Vector2i> LevelManager::GetVisiblePlatforms()
+std::vector<Platform> LevelManager::GetVisiblePlatforms()
 {
   return m_Level_1_1.GetVisiblePlatforms();
 }

@@ -2,7 +2,6 @@
 
 #include <SFML/Window/Joystick.hpp>
 #include <unordered_map>
-//#include <SFML/Graphics.hpp>
 
 enum class dPad
 {
@@ -39,5 +38,4 @@ private:
   dPad m_dPadDirection;
   int m_dPadXAxis;
   int m_dPadYAxis;
-
 };

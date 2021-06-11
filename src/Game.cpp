@@ -1,4 +1,6 @@
 #include "Game.h"
+#include <SFML/Graphics.hpp>
+#include <string>
 
 Game::Game()
 {
@@ -23,23 +25,16 @@ Game::Game()
   for(int i = 0; i <= 14; i++)
   {
     pathToTexture = "../resources/images/BucketsMovement_" + std::to_string(i) + ".png";
-    std::cout << pathToTexture << std::endl;
+    //std::cout << pathToTexture << std::endl;
     m_Player1.AddAnimTexture(pathToTexture);
   }
-  //m_Player1.AddAnimTexture("../resources/images/BucketsMovement_0.png");
   m_Player1.HandleAnimTexture();
-  m_playerStartPositionX = ((float)m_window.GetSize().x / 2) - (m_Player1.GetPlayerWidth() / 2);
-  m_playerStartPositionY = ((float)m_window.GetSize().y / 2) - (m_Player1.GetPlayerHeight() / 2);
+  m_playerStartPositionX = ((float)m_window.GetSize().x / 2) - (m_Player1.GetSize().x / 2);
+  m_playerStartPositionY = ((float)m_window.GetSize().y / 2) - (m_Player1.GetSize().y / 2);
 
   m_Player1.SetPosition(m_playerStartPositionX, m_playerStartPositionY);
 
   m_gameCamera.setSize({ (float)m_window.GetSize().x, (float)m_window.GetSize().y });
-  //m_gameCamera.setCenter(m_Player1.GetPosition().x + (930 + m_Player1.GetPlayerWidth()/ 2), m_Player1.GetPosition().y + (540 - m_Player1.GetPlayerHeight() /2));
-  // m_gameCamera.setCenter(930, 482);
-
-  //std::cout << "Camera Center: " << m_gameCamera.getCenter().x << std::endl;
-  //testLevel.LoadLevelMap("../maps/level_1_1");
-  //m_LevelManager.BuildLevel();
 }
 Game::~Game() { m_window.Close(); }
 
@@ -47,13 +42,9 @@ Window* Game::GetWindow() { return &m_window; }
 
 void Game::Update()
 {
-  // std::cout << "Controller X Axis Postion is: " << sf::Joystick::getAxisPosition(0, sf::Joystick::X) << std::endl;
-  // std::cout << "Controller Y Axis Positsion is: " << sf::Joystick::getAxisPosition(0, sf::Joystick::Y) << std::endl;
-
   m_ElapsedTime = m_GameClock.restart();
   m_window.Update();
   m_state = m_window.GetState();
-
 
   if(m_state == GameState::Title)
   {
@@ -129,124 +120,30 @@ void Game::Update()
       m_optionsMenu.ProcessSelection(m_window, m_optionsSelectBuffer);
     }
   }
-  else if(m_state == GameState::GamePlay)
+  if(m_state == GameState::GamePlay)
   {
     if(m_Player1.GetPosition().x < m_playerStartPositionX)
     {
-      m_gameCamera.setCenter(m_playerStartPositionX + (m_Player1.GetPlayerWidth() / 2), m_playerStartPositionY + (m_Player1.GetPlayerHeight() / 2));
+      m_gameCamera.setCenter(m_playerStartPositionX + (m_Player1.GetSize().x / 2), m_playerStartPositionY + (m_Player1.GetSize().y / 2));
     }
     else
     {
-      m_gameCamera.setCenter(m_Player1.GetPosition().x + (m_Player1.GetPlayerWidth() / 2), m_window.GetSize().y / 2);
+      m_gameCamera.setCenter(m_Player1.GetPosition().x + (m_Player1.GetSize().x / 2), m_window.GetSize().y / 2);
     }
 
     m_window.SetView(m_gameCamera);
-    float fTimeElapsed = m_ElapsedTime.asSeconds() * 60; //multiplying by max framerate (set in Window class) to keep player from moving slowly
-
-    //Check to see if player is on ground, if not call "gravity" by setting player movement down, move the player, then check for collision
-    //Commenting out because m_OnGround flag is set with collision checks, but not sure if new solution has bugs or not.
-    // if(!m_Player1.GetOnGround(m_LevelManager.GetVisiblePlatforms()))
-    // {
-    //   m_Player1.SetPlayerMovement(PlayerMovement::Down);
-    //   m_Player1.MovePlayer(fTimeElapsed);
-    //   m_Player1.CollisionCheck(m_LevelManager.GetVisiblePlatforms());
-    // }
-    // if(!m_Player1.OnGround())
-    // {
-    //   // m_Player1.SetPlayerMovement(PlayerMovement::Down);
-    //   m_Player1.CollisionCheck(m_LevelManager.GetVisiblePlatforms());
-    //   // m_Player1.MovePlayer(fTimeElapsed);
-    //   // m_Player1.CollisionCheck(m_LevelManager.GetVisiblePlatforms());
-    // }
-
-    //Get the user input directive to set player movement
-    if(!m_Player1.SideCollision())
-    {
-      if(m_window.GetPlayerDirective() == "Right")
-      {
-        m_Player1.SetPlayerMovement(PlayerMovement::Right);
-      }
-      else if(m_window.GetPlayerDirective() == "Left")
-      {
-        m_Player1.SetPlayerMovement(PlayerMovement::Left);
-      }
-      else if(m_window.GetPlayerDirective() == "Up")
-      {
-        m_Player1.SetPlayerMovement(PlayerMovement::Up);
-      }
-      else if(m_window.GetPlayerDirective() == "Down")
-      {
-        m_Player1.SetPlayerMovement(PlayerMovement::Down);
-      }
-      else if (m_window.GetPlayerDirective() == "Still")
-      {
-        m_Player1.SetPlayerMovement(PlayerMovement::Still);
-      }
-      else
-      {
-        m_Player1.SetPlayerMovement(PlayerMovement::Still);
-      }
-    }
-    else
-    {
-      m_Player1.SetPlayerMovement(PlayerMovement::Still);
-    }
-
-    //Move the player with the directive given by user input
-    m_Player1.MovePlayer(fTimeElapsed);
-
-    //Get Player action.  Actions should probably be put in a buffer as more than 1 can be executed.
-    m_PlayerActions.clear();
-    m_Player1.ClearPlayerActions();
-    m_PlayerActions = m_window.GetPlayerActions();
-    if(!m_PlayerActions.empty())
-    {
-      //std::cout << "This ran" << std::endl;
-      for(int i = 0; i < m_PlayerActions.size(); ++i)
-      {
-        if(m_PlayerActions[i] == "Jump")
-        {
-          m_Player1.SetPlayerAction(PlayerAction::Jump);
-          //m_Player1.Jump(fTimeElapsed);
-        }
-        else if(m_PlayerActions[i] == "Land")
-        {
-          m_Player1.SetPlayerAction(PlayerAction::Land);
-        }
-        if(m_PlayerActions[i] == "Run")
-        {
-          //std::cout << "Run pushed to player actions" << std::endl;
-          m_Player1.SetPlayerAction(PlayerAction::Run);
-        }
-        if(m_PlayerActions[i] == "Walk")
-        {
-          //std::cout << "Walk pushed to player actions" << std::endl;
-          m_Player1.SetPlayerAction(PlayerAction::Walk);
-        }
-      }
-    }
-    else
-    {
-      m_Player1.SetPlayerAction(PlayerAction::None);
-    }
-    // if(m_window.GetPlayerAction() == "Jump")
-    // {
-    //   m_Player1.SetPlayerAction(PlayerAction::Jump);
-    //   m_Player1.Jump(fTimeElapsed);
-    // }
-    // else if(m_window.GetPlayerAction() == "None")
-    // {
-    //   m_Player1.SetPlayerAction(PlayerAction::None);
-    // }
-
-    //Now that all movements are accounted for, check for collisions
-    m_Player1.CollisionCheck(m_LevelManager.GetVisiblePlatforms());
 
     if(m_LevelManager.CheckLevelChange())
     {
       m_LevelManager.BuildLevel();
       m_LevelManager.SetLevelChange(false);
     }
+
+    //Now that all movements are accounted for, check for collisions
+    std::vector<Platform> VisiblePlats = m_LevelManager.GetVisiblePlatforms();
+    float fTimeElapsed = m_ElapsedTime.asSeconds() * 60; //multiplying by max framerate (set in Window class) to keep player from moving slowly
+    m_CollisionHandler.OnUserUpdate(m_window, VisiblePlats, m_Player1, fTimeElapsed);
+
 
     /*A static display bar with score and stuff can be put here.  When you do, make sure to create a Window function fot GetDefaultView as outlined in SFML documentation:
     https://www.sfml-dev.org/documentation/2.5.1/classsf_1_1RenderTarget.php#ad3b533c3f899d7044d981ed607aef9be
@@ -258,7 +155,16 @@ void Game::Update()
 
 
 
-void Game::Render() {
+void Game::Render()
+{
+  sf::Font font;
+  font.loadFromFile("../resources/fonts/Ubuntu-Medium.ttf");
+
+  //Text object commented out below, but used to test debuging messages by uncommenting
+  //sf::Text text("Initial Test", font);
+  // text.setCharacterSize(30);
+  // text.setStyle(sf::Text::Bold);
+  // text.setFillColor(sf::Color::Red);
   m_window.BeginDraw();
   if(m_state == GameState::Title)
   {
@@ -267,9 +173,11 @@ void Game::Render() {
   }
   else if(m_state == GameState::GamePlay)
   {
-    //m_enemy.Draw(m_window);
     m_LevelManager.DrawLevel(m_window, m_gameCamera);
     m_Player1.Draw(m_window);
+    m_window.SetView(m_window.GetDefaultView());
+    //text.setString(m_CollisionHandler.DebugMessage());
+    //m_window.Draw(text);
   }
   else if(m_state == GameState::Options)
   {

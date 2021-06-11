@@ -1,7 +1,6 @@
 #include "Platform.h"
-#include <iostream>
 
-Platform::Platform() { std::cout << "Platform Constructor Ran" << std::endl;}
+Platform::Platform() { }
 
 Platform::~Platform() { }
 
@@ -13,8 +12,11 @@ void Platform::LoadTexture(std::string imgPath)
 void Platform::SetTexture()
 {
   m_PlatformSprite.setTexture(m_PlatformTexture);
-  // m_PlatformWidth = m_PlatformSprite.getGlobalBounds().width;
-  // m_PlatformHeight = m_PlatformSprite.getGlobalBounds().height;
+}
+
+sf::Vector2f Platform::GetSize() const
+{
+  return { m_PlatformSprite.getGlobalBounds().width, m_PlatformSprite.getGlobalBounds().height };
 }
 
 int Platform::GetWidth()
@@ -22,6 +24,7 @@ int Platform::GetWidth()
   m_PlatformWidth = m_PlatformSprite.getGlobalBounds().width;
   return m_PlatformWidth;
 }
+
 int Platform::GetHeight()
 {
   m_PlatformHeight = m_PlatformSprite.getGlobalBounds().height;
@@ -33,7 +36,17 @@ void Platform::SetPosition(int x, int y)
   m_PlatformSprite.setPosition(x, y);
 }
 
-void Platform::Draw(Window& l_window)
+void Platform::SetPosition(sf::Vector2f pos)
 {
-  l_window.Draw(m_PlatformSprite);
+  m_PlatformSprite.setPosition(pos);
+}
+
+sf::Vector2f Platform::GetPosition() const
+{
+  return m_PlatformSprite.getPosition();
+}
+
+void Platform::Draw(Window& win)
+{
+  win.Draw(m_PlatformSprite);
 }
