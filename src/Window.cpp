@@ -30,7 +30,7 @@ sf::View Window::GetDefaultView()
   return m_window.getDefaultView();
 }
 
-void Window::BeginDraw() { m_window.clear(sf::Color::White); }
+void Window::BeginDraw() { m_window.clear(sf::Color::Blue); }
 void Window::Draw(sf::Drawable& object)
 {
   m_window.draw(object);

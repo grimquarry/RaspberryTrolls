@@ -35,6 +35,7 @@ Game::Game()
   m_Player1.SetPosition(m_playerStartPositionX, m_playerStartPositionY);
 
   m_gameCamera.setSize({ (float)m_window.GetSize().x, (float)m_window.GetSize().y });
+  m_LevelManager.SetWindowSize(m_window.GetSize());
 }
 Game::~Game() { m_window.Close(); }
 
@@ -125,10 +126,14 @@ void Game::Update()
     if(m_Player1.GetPosition().x < m_playerStartPositionX)
     {
       m_gameCamera.setCenter(m_playerStartPositionX + (m_Player1.GetSize().x / 2), m_playerStartPositionY + (m_Player1.GetSize().y / 2));
+      m_LevelManager.SetBackgroundCenter( { m_playerStartPositionX + (m_Player1.GetSize().x / 2), m_playerStartPositionY + (m_Player1.GetSize().y / 2) } );
     }
     else
     {
       m_gameCamera.setCenter(m_Player1.GetPosition().x + (m_Player1.GetSize().x / 2), m_window.GetSize().y / 2);
+      //Why add 480 to x center in the line below?  It offsets the backround image, but I don't really know why 480 is the magic number?  I came to it by trial and error
+      //and I'm probably going to kick myself for tnot understanding this later.
+      m_LevelManager.SetBackgroundCenter( { (m_Player1.GetPosition().x + (m_Player1.GetSize().x / 2)) / 2.0f + 480, (m_window.GetSize().y / 2.0f)} );
     }
 
     m_window.SetView(m_gameCamera);

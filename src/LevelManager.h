@@ -11,7 +11,9 @@ public:
 
   std::vector<Platform> GetVisiblePlatforms();
 
+  void SetWindowSize(sf::Vector2u winSize);
   void BuildLevel();
+  void SetBackgroundCenter(sf::Vector2f center);
 
   bool CheckLevelChange();
   void SetLevelChange(bool lvlchange);
@@ -22,4 +24,6 @@ private:
   bool m_LevelChange;
   Level m_Level_1_1;
   int m_CurrentLevel;
+  sf::Vector2u m_WindowSize;
+  sf::Vector2f m_BackgroundCenter;
 };
