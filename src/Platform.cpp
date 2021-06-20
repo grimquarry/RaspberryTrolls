@@ -41,6 +41,13 @@ void Platform::SetPosition(sf::Vector2f pos)
   m_PlatformSprite.setPosition(pos);
 }
 
+void Platform::Rotate(float degrees)
+{
+  m_PlatformSprite.setRotation(degrees);
+  m_PlatformSprite.setScale({ 1, -1 });
+  m_PlatformSprite.setOrigin(m_PlatformWidth, 0.0f);
+}
+
 sf::Vector2f Platform::GetPosition() const
 {
   return m_PlatformSprite.getPosition();

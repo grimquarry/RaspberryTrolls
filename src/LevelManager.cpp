@@ -4,6 +4,11 @@ LevelManager::LevelManager()
 {
   m_LevelChange = true;
   m_CurrentLevel = 11;
+
+  m_NectarineBranch.LoadTexture("../resources/images/nectarineBranch_2.png");
+  m_NectarineBranch.SetTexture();
+  m_NectarineBlossom1.LoadTexture("../resources/images/NectarineBlossom1.png");
+  m_NectarineBlossom1.SetTexture();
 }
 
 LevelManager::~LevelManager() { }
@@ -15,7 +20,8 @@ void LevelManager::BuildLevel()
     m_Level_1_1.SetParallaxCam(m_WindowSize);
     m_Level_1_1.LoadLevelMap("../maps/level_1_1");
     m_Level_1_1.LoadLevelBackground("../resources/images/Mountains_2.png");
-    m_Level_1_1.AddPlatformSprite("../resources/images/nectarineBranch_2.png");
+    m_Level_1_1.AddPlatformSprite(m_NectarineBranch);
+    m_Level_1_1.AddPlatformSprite(m_NectarineBlossom1);
     break;
   }
 }

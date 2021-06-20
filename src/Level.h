@@ -17,7 +17,7 @@ public:
 
   void LoadLevelMap(std::string mapPath);
   void LoadLevelBackground(std::string filePath);
-  void AddPlatformSprite(std::string imgPath);
+  void AddPlatformSprite(Platform& plat);
 
   void SetParallaxCam(sf::Vector2u winSize);
   void SetBackgroundCenter(sf::Vector2f center);

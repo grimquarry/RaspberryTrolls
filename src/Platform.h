@@ -24,6 +24,8 @@ public:
 
   void SetPosition(sf::Vector2f pos);
 
+  void Rotate(float degrees);
+
   sf::Vector2f GetPosition() const;
 
   void Draw(Window& win);

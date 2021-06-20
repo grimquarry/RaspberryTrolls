@@ -26,4 +26,7 @@ private:
   int m_CurrentLevel;
   sf::Vector2u m_WindowSize;
   sf::Vector2f m_BackgroundCenter;
+
+  Platform m_NectarineBranch;
+  Platform m_NectarineBlossom1;
 };

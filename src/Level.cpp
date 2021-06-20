@@ -44,12 +44,12 @@ void Level::LoadLevelBackground(std::string filePath)
   m_LevelBackground.SetTexture();
 }
 
-void Level::AddPlatformSprite(std::string imgPath)
+void Level::AddPlatformSprite(Platform& plat)
 {
-  m_PlatformSprite.LoadTexture(imgPath);
-  m_PlatformSprite.SetTexture();
+  // m_PlatformSprite.LoadTexture(imgPath);
+  // m_PlatformSprite.SetTexture();
 
-  m_PlatformSprites.push_back(m_PlatformSprite);
+  m_PlatformSprites.push_back(plat);
 }
 
 void Level::SetParallaxCam(sf::Vector2u winSize)
@@ -80,18 +80,42 @@ void Level::Draw(Window& l_window, sf::View view)
 
   m_VisibleTiles.clear();
   l_window.SetView(view);
+
   for(int y = 0; y < m_LevelHeight; y++)
   {
     for(int x = 0; x < m_LevelWidth; x++)
     {
-      int platformLocationX = x * 200;
-      int platformLocationY = y * 75;
+      int platformLocationX = x * 25; //The X axis incremets in spans of 25 pixels
+      int platformLocationY = y * 75; //The Y axis increments in spans of 75 pixels
       if(m_LevelMap[tileIndex] == '0' && platformLocationX > minXView && platformLocationX < maxXView)
       {
         m_PlatformSprites[0].SetPosition(platformLocationX, platformLocationY);
         m_VisibleTiles.push_back(m_PlatformSprites[0]);
         m_PlatformSprites[0].Draw(l_window);
       }
+      else if(m_LevelMap[tileIndex] == '1' && platformLocationX > minXView && platformLocationX < maxXView)
+      {
+        m_PlatformSprites[1].SetPosition(platformLocationX, platformLocationY);
+        m_VisibleTiles.push_back(m_PlatformSprites[1]);
+        m_PlatformSprites[1].Draw(l_window);
+      }
+      else if(m_LevelMap[tileIndex] == 'h' && platformLocationX > minXView && platformLocationX < maxXView)
+      {
+        Platform rotatedBranch = m_PlatformSprites[0];
+
+        rotatedBranch.Rotate(90.f);
+        rotatedBranch.SetPosition(platformLocationX, platformLocationY - 25); //subtract 25 to make it line up properly
+        m_VisibleTiles.push_back(rotatedBranch);
+        rotatedBranch.Draw(l_window);
+
+        if(m_LevelMap[tileIndex - m_LevelWidth] == '1')
+        {
+          m_PlatformSprites[1].SetPosition(platformLocationX, platformLocationY - 75);
+          m_VisibleTiles.push_back(m_PlatformSprites[1]);
+          m_PlatformSprites[1].Draw(l_window);
+        }
+      }
+
       tileIndex++;
     }
   }
