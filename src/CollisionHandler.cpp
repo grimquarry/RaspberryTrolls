@@ -182,13 +182,31 @@ bool CollisionHandler::OnUserUpdate(Window& win, std::vector<Platform>& vPlats, 
     if(player.GetPosition().y + player.GetSize().y == vPlats[i].GetPosition().y)
     {
       player.SetOnGround(true);
-      m_DebugMessage = "Player is on the ground";
+      //m_DebugMessage = "Player is on the ground";
       break;
     }
     else
     {
       player.SetOnGround(false);
-      m_DebugMessage = "Player not on ground";
+      //m_DebugMessage = "Player not on ground";
+    }
+  }
+
+  for(int i = 0; i < vPlats.size(); ++i)
+  {
+    if(player.GetPosition().x + player.GetSize().x == vPlats[i].GetPosition().x)
+    {
+      player.SetSideCollision(true);
+      break;
+    }
+    else if (player.GetPosition().x == vPlats[i].GetPosition().x + vPlats[i].GetWidth())
+    {
+      player.SetSideCollision(true);
+      break;
+    }
+    else
+    {
+      player.SetSideCollision(false);
     }
   }
 

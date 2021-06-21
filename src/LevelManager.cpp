@@ -7,8 +7,12 @@ LevelManager::LevelManager()
 
   m_NectarineBranch.LoadTexture("../resources/images/nectarineBranch_2.png");
   m_NectarineBranch.SetTexture();
+  m_RotatedNectBranch = m_NectarineBranch;
+  m_RotatedNectBranch.Rotate(90.f);
   m_NectarineBlossom1.LoadTexture("../resources/images/NectarineBlossom1.png");
   m_NectarineBlossom1.SetTexture();
+  m_NectarineLeaves1.LoadTexture("../resources/images/NectarineLeaf.png");
+  m_NectarineLeaves1.SetTexture();
 }
 
 LevelManager::~LevelManager() { }
@@ -22,6 +26,8 @@ void LevelManager::BuildLevel()
     m_Level_1_1.LoadLevelBackground("../resources/images/Mountains_2.png");
     m_Level_1_1.AddPlatformSprite(m_NectarineBranch);
     m_Level_1_1.AddPlatformSprite(m_NectarineBlossom1);
+    m_Level_1_1.AddPlatformSprite(m_RotatedNectBranch);
+    m_Level_1_1.AddPlatformSprite(m_NectarineLeaves1);
     break;
   }
 }

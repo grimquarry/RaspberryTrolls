@@ -23,6 +23,8 @@ public:
   void SetOnGround(bool b);
   bool GetOnGround();
 
+  void SetSideCollision(bool b);
+
   sf::Vector2f vel;
 
   sf::Vector2f GetPosition() const;
@@ -65,4 +67,5 @@ private:
   bool m_Stop;
   bool m_Run;
   bool m_Walk;
+  bool m_SideCollision;
 };

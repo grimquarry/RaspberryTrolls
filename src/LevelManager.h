@@ -29,4 +29,6 @@ private:
 
   Platform m_NectarineBranch;
   Platform m_NectarineBlossom1;
+  Platform m_RotatedNectBranch;
+  Platform m_NectarineLeaves1;
 };

@@ -15,6 +15,7 @@
     m_Run = false;
     m_Jump = false;
     m_Land = false;
+    m_SideCollision = false;
   }
 
   Player::~Player() { }
@@ -194,6 +195,8 @@
 
   bool Player::GetOnGround() { return m_OnGround; }
 
+  void Player::SetSideCollision(bool b) { m_SideCollision = b; }
+
   sf::Vector2f Player::GetSize() const
   {
     return { m_PlayerSprite.getGlobalBounds().width, m_PlayerSprite.getGlobalBounds().height };
@@ -273,7 +276,20 @@
 
     if(m_Jump || m_Land) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[14]); }
     else if(m_Stop && !m_Jump || m_Stop && !m_Land) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]); }
-    else if(m_Walk && !m_Jump || m_Run && !m_Jump) { if(!m_Jump || m_Land) { WalkAnimation(); } }
+    else if(m_Walk && !m_Jump || m_Run && !m_Jump)
+    {
+      if(!m_Jump || m_Land)
+      {
+        if(!m_SideCollision)
+        {
+          WalkAnimation();
+        }
+        else if (m_SideCollision)
+        {
+          m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+        }
+      }
+    }
 
     //Because this code is set to register button pushes only once, we need to set the original jump directive to false
     //after it's pushed.  Otherwise there's no other logic to stop the player from decreasing movement in the y axis
