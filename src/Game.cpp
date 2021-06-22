@@ -21,6 +21,8 @@ Game::Game()
   m_optionsMenu.SetOptions(m_optionsSelectBuffer);
   m_optionsMenuIndex = 0;
 
+
+  m_Player1.SetPlayerName("BUCKETS");
   std::string pathToTexture;
   for(int i = 0; i <= 14; i++)
   {
@@ -136,7 +138,7 @@ void Game::Update()
       m_LevelManager.SetBackgroundCenter( { (m_Player1.GetPosition().x + (m_Player1.GetSize().x / 2)) / 2.0f + 480, (m_window.GetSize().y / 2.0f)} );
     }
 
-    m_window.SetView(m_gameCamera);
+    // m_window.SetView(m_gameCamera);
 
     if(m_LevelManager.CheckLevelChange())
     {
@@ -148,13 +150,12 @@ void Game::Update()
     std::vector<Platform> VisiblePlats = m_LevelManager.GetVisiblePlatforms();
     float fTimeElapsed = m_ElapsedTime.asSeconds() * 60; //multiplying by max framerate (set in Window class) to keep player from moving slowly
     m_CollisionHandler.OnUserUpdate(m_window, VisiblePlats, m_Player1, fTimeElapsed);
-
-
     /*A static display bar with score and stuff can be put here.  When you do, make sure to create a Window function fot GetDefaultView as outlined in SFML documentation:
     https://www.sfml-dev.org/documentation/2.5.1/classsf_1_1RenderTarget.php#ad3b533c3f899d7044d981ed607aef9be
     Then it's a matter of running m_window.setView(m_window.GetDefaultView()) as explained in this video: https://youtu.be/SAXmkvICHbI?t=600
     It's necessary to draw the bar outside of the Gameview because we don't want it to move, hence setting back to default view.  I'll likely make the info/score bar its
     own class, so remember that.*/
+
   }
 }
 
@@ -162,8 +163,8 @@ void Game::Update()
 
 void Game::Render()
 {
-  sf::Font font;
-  font.loadFromFile("../resources/fonts/Ubuntu-Medium.ttf");
+  // sf::Font font;
+  // font.loadFromFile("../resources/fonts/Ubuntu-Medium.ttf");
 
   //Text object commented out below, but used to test debuging messages by uncommenting
   //sf::Text text("Initial Test", font);
@@ -178,9 +179,12 @@ void Game::Render()
   }
   else if(m_state == GameState::GamePlay)
   {
+    m_window.SetView(m_gameCamera);
     m_LevelManager.DrawLevel(m_window, m_gameCamera);
     m_Player1.Draw(m_window);
-    m_window.SetView(m_window.GetDefaultView());
+    //m_window.SetView(m_window.GetDefaultView());
+    m_DisplayBar.GetPlayerInfo(m_Player1);
+    m_DisplayBar.Draw(m_window);
     //text.setString(m_CollisionHandler.DebugMessage());
     //m_window.Draw(text);
   }

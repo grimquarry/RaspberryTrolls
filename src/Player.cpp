@@ -2,6 +2,7 @@
 
   Player::Player()
   {
+    m_Score = 0;
     m_WalkAnimItr = 0;
     m_MaxWalkVelocity = 6.0f;
     m_MinWalkVelocity = -6.0f;
@@ -19,6 +20,12 @@
   }
 
   Player::~Player() { }
+
+  void Player::SetPlayerName(std::string name) { m_Name = name; }
+  std::string Player::GetPlayerName() const { return m_Name; }
+
+  void Player::ScoreIncrement(int increment) { m_Score += increment; }
+  int Player::GetScore() const { return m_Score; }
 
   void Player::SetMoveDirectives(std::vector<PlayerMovement> vMovements)
   {

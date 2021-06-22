@@ -13,8 +13,8 @@
 #include "CollisionHandler.h"
 #include "LevelManager.h"
 #include "Player.h"
-
 #include "Platform.h"
+#include "DisplayBar.h"
 
 
 class Game {
@@ -58,4 +58,6 @@ private:
   std::vector<std::string> m_PlayerActions;
 
   CollisionHandler m_CollisionHandler;
+
+  DisplayBar m_DisplayBar;
 };

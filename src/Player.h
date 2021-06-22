@@ -13,6 +13,12 @@ public:
 
   ~Player();
 
+  void SetPlayerName(std::string name);
+  std::string GetPlayerName() const;
+
+  void ScoreIncrement(int increment);
+  int GetScore() const;
+
   void SetMoveDirectives(std::vector<PlayerMovement> vMovements);
   void SetActionDirectives(std::vector<PlayerAction> vActions);
 
@@ -49,6 +55,8 @@ protected:
   std::vector<sf::Texture> m_TxtrAnimBuff;
 
 private:
+  std::string m_Name;
+  int m_Score;
   sf::Vector2f m_Position;
   int m_WalkAnimItr;
   int m_FrameCount;

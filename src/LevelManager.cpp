@@ -7,7 +7,8 @@ LevelManager::LevelManager()
 
   m_NectarineBranch.LoadTexture("../resources/images/nectarineBranch_2.png");
   m_NectarineBranch.SetTexture();
-  m_RotatedNectBranch = m_NectarineBranch;
+  m_RotatedNectBranch.LoadTexture("../resources/images/nectarineBranch_2.png");
+  m_RotatedNectBranch.SetTexture();
   m_RotatedNectBranch.Rotate(90.f);
   m_NectarineBlossom1.LoadTexture("../resources/images/NectarineBlossom1.png");
   m_NectarineBlossom1.SetTexture();
