@@ -103,13 +103,28 @@ void EventManager::HandleEvent(sf::Event& l_event)
         {
           m_RightButtonDown = true;
           m_MoveDirectives.push_back(PlayerMovement::Right);
-          m_ActionDirectives.push_back(PlayerAction::Walk);
+          if(m_RunButtonDown)
+          {
+            m_ActionDirectives.push_back(PlayerAction::Run);
+          }
+          else
+          {
+            m_ActionDirectives.push_back(PlayerAction::Walk);
+          }
+
         }
         else if(l_event.key.code == sf::Keyboard::Left)
         {
           m_LeftButtonDown = true;
           m_MoveDirectives.push_back(PlayerMovement::Left);
-          m_ActionDirectives.push_back(PlayerAction::Walk);
+          if(m_RunButtonDown)
+          {
+            m_ActionDirectives.push_back(PlayerAction::Run);
+          }
+          else
+          {
+            m_ActionDirectives.push_back(PlayerAction::Walk);
+          }
         }
 
         if(l_event.key.code == sf::Keyboard::Down)
@@ -127,6 +142,7 @@ void EventManager::HandleEvent(sf::Event& l_event)
         }
         if(l_event.key.code == sf::Keyboard::A)
         {
+          m_RunButtonDown = true;
           if(!m_ActionDirectives.empty())
           {
             std::replace (m_ActionDirectives.begin(), m_ActionDirectives.end(), PlayerAction::Walk, PlayerAction::Run);
@@ -215,6 +231,7 @@ void EventManager::HandleEvent(sf::Event& l_event)
           case sf::Keyboard::A:
             if(m_state == GameState::GamePlay)
             {
+              m_RunButtonDown = false;
               if(!m_ActionDirectives.empty())
               {
                 std::replace (m_ActionDirectives.begin(), m_ActionDirectives.end(), PlayerAction::Run, PlayerAction::Walk);
