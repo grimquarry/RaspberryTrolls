@@ -125,6 +125,43 @@ void Game::Update()
   }
   if(m_state == GameState::GamePlay)
   {
+    // if(m_Player1.GetPosition().x < m_playerStartPositionX)
+    // {
+    //   m_gameCamera.setCenter(m_playerStartPositionX + (m_Player1.GetSize().x / 2), m_playerStartPositionY + (m_Player1.GetSize().y / 2));
+    //   m_LevelManager.SetBackgroundCenter( { m_playerStartPositionX + (m_Player1.GetSize().x / 2), m_playerStartPositionY + (m_Player1.GetSize().y / 2) } );
+    // }
+    // else
+    // {
+    //   m_gameCamera.setCenter(m_Player1.GetPosition().x + (m_Player1.GetSize().x / 2), m_window.GetSize().y / 2);
+    //   //Why add 480 to x center in the line below?  It offsets the backround image, but I don't really know why 480 is the magic number?  I came to it by trial and error
+    //   //and I'm probably going to kick myself for tnot understanding this later.
+    //   m_LevelManager.SetBackgroundCenter( { (m_Player1.GetPosition().x + (m_Player1.GetSize().x / 2)) / 2.0f + 480, (m_window.GetSize().y / 2.0f)} );
+    // }
+
+    // m_window.SetView(m_gameCamera);
+
+    if(m_LevelManager.CheckLevelChange())
+    {
+      m_LevelManager.BuildLevel();
+      m_LevelManager.SetLevelChange(false);
+    }
+
+
+    //Now that all movements are accounted for, check for collisions
+    std::vector<Platform> VisiblePlats = m_LevelManager.GetVisiblePlatforms();
+    std::vector<Fruit> VisibleFruit = m_LevelManager.GetVisibleFruit();
+    float fTimeElapsed = m_ElapsedTime.asSeconds() * 60; //multiplying by max framerate (set in Window class) to keep player from moving slowly
+    m_CollisionHandler.OnUserUpdate(m_window, VisiblePlats, m_Player1, VisibleFruit, fTimeElapsed);
+    for(int i = 0; i < VisibleFruit.size(); ++i)
+    {
+      if(!VisibleFruit[i].GetCollectable())
+      {
+        std::cout << "hell yeah" << std::endl;
+        m_LevelManager.HandleCollectedFruit(VisibleFruit[i].GetPosition());
+      }
+    }
+    std::cout << "Player position: " << m_Player1.GetPosition().x << ", " << m_Player1.GetPosition().y << std::endl;
+
     if(m_Player1.GetPosition().x < m_playerStartPositionX)
     {
       m_gameCamera.setCenter(m_playerStartPositionX + (m_Player1.GetSize().x / 2), m_playerStartPositionY + (m_Player1.GetSize().y / 2));
@@ -137,19 +174,6 @@ void Game::Update()
       //and I'm probably going to kick myself for tnot understanding this later.
       m_LevelManager.SetBackgroundCenter( { (m_Player1.GetPosition().x + (m_Player1.GetSize().x / 2)) / 2.0f + 480, (m_window.GetSize().y / 2.0f)} );
     }
-
-    // m_window.SetView(m_gameCamera);
-
-    if(m_LevelManager.CheckLevelChange())
-    {
-      m_LevelManager.BuildLevel();
-      m_LevelManager.SetLevelChange(false);
-    }
-
-    //Now that all movements are accounted for, check for collisions
-    std::vector<Platform> VisiblePlats = m_LevelManager.GetVisiblePlatforms();
-    float fTimeElapsed = m_ElapsedTime.asSeconds() * 60; //multiplying by max framerate (set in Window class) to keep player from moving slowly
-    m_CollisionHandler.OnUserUpdate(m_window, VisiblePlats, m_Player1, fTimeElapsed);
     /*A static display bar with score and stuff can be put here.  When you do, make sure to create a Window function fot GetDefaultView as outlined in SFML documentation:
     https://www.sfml-dev.org/documentation/2.5.1/classsf_1_1RenderTarget.php#ad3b533c3f899d7044d981ed607aef9be
     Then it's a matter of running m_window.setView(m_window.GetDefaultView()) as explained in this video: https://youtu.be/SAXmkvICHbI?t=600

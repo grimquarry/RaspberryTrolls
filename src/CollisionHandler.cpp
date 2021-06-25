@@ -17,7 +17,7 @@ bool CollisionHandler::PointVsRect(const sf::Vector2f& p, const Platform& r)
     p.x < r.GetPosition().x + r.GetSize().x && p.y < r.GetPosition().y + r.GetSize().y);
 }
 
-bool CollisionHandler::RectVsRect(const Player& r1, Platform& r2)
+bool CollisionHandler::RectVsRect(const Player& r1, Fruit& r2)
 {
   return (r1.GetPosition().x < r2.GetPosition().x + r2.GetSize().x &&
     r1.GetPosition().x + r1.GetSize().x > r2.GetPosition().x &&
@@ -149,11 +149,24 @@ sf::Vector2f CollisionHandler::NormalizeVector(sf::Vector2f vector)
   return unitVector;
 }
 
-bool CollisionHandler::OnUserUpdate(Window& win, std::vector<Platform>& vPlats, Player& player, float fElapsedTime)
+bool CollisionHandler::OnUserUpdate(Window& win, std::vector<Platform>& vPlats, Player& player, std::vector<Fruit>& vFruit, float fElapsedTime)
 {
   player.SetMoveDirectives(win.GetPlayerDirectives());
   player.SetActionDirectives(win.GetPlayerActions());
   player.Move();
+
+  //std::cout << "Visible Fruit vector size is: " << vFruit.size() << std::endl;
+  for(int i = 0; i < vFruit.size(); ++i)
+  {
+    // std::cout << "Player position: " << player.GetPosition().x << ", " << player.GetPosition().y << std::endl;
+    // std::cout << "Fruit Position is: " << vFruit[i].GetPosition().x << ", " << vFruit[i].GetPosition().y << std::endl;
+    if(RectVsRect(player, vFruit[i]))
+    {
+      vFruit[i].SetCollectable(false);
+      std::cout << "We got a hit" << std::endl;
+    }
+
+  }
 
   sf::Vector2f cp, cn;
   float t = 0, min_t = INFINITY;

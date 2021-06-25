@@ -8,6 +8,7 @@ https://youtu.be/8JJ-4JgR7Dg*/
 #include "Platform.h"
 #include "Player.h"
 #include "Window.h"
+#include "Fruit.h"
 
 class CollisionHandler
 {
@@ -26,7 +27,7 @@ public:
 
   bool PointVsRect(const sf::Vector2f& p, const Platform& r);
 
-  bool RectVsRect(const Player& r1, Platform& r2);
+  bool RectVsRect(const Player& r1, Fruit& r2);
 
   //Uses Swept AABB algorithm explained really well in this video: https://youtu.be/8JJ-4JgR7Dg
   bool RayVsRect(const sf::Vector2f& ray_origin, const sf::Vector2f& ray_dir,
@@ -40,5 +41,5 @@ public:
 
   sf::Vector2f NormalizeVector(sf::Vector2f vector);
 
-  bool OnUserUpdate(Window& win, std::vector<Platform>& vPlats, Player& player, float fElapsedTime);
+  bool OnUserUpdate(Window& win, std::vector<Platform>& vPlats, Player& player, std::vector<Fruit>& vFruit, float fElapsedTime);
 };
