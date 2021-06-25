@@ -16,7 +16,6 @@ public:
   void SetCollectable(bool b);
   bool GetCollectable();
 
-
   void SetPosition(int x, int y);
   sf::Vector2f GetPosition() const;
 
@@ -36,4 +35,9 @@ protected:
 private:
   sf::Vector2f m_Position;
   bool m_Collected;
+  int m_FrameCount;
+  int m_BufferItr;
+  int m_PreviousBuffItr;
+
+  void CheckBuffItr(int start, int end);
 };

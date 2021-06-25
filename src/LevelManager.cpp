@@ -16,6 +16,8 @@ LevelManager::LevelManager()
   m_NectarineLeaves1.SetTexture();
 
   m_Nectarine.AddAnimTexture("../resources/images/Nectarine1.png");
+  m_Nectarine.AddAnimTexture("../resources/images/Nectarine2.png");
+  m_Nectarine.AddAnimTexture("../resources/images/Nectarine3.png");
 }
 
 LevelManager::~LevelManager() { }
