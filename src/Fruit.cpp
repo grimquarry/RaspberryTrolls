@@ -3,7 +3,7 @@
 Fruit::Fruit()
 {
   m_Collected = true;
-  m_FrameCount = 0;
+  m_FrameCount = 1;
   m_BufferItr = 0;
 }
 
@@ -48,53 +48,72 @@ void Fruit::HandleAnimTexture()
   std::cout << "Buffer End value is: " << bufferEnd << std::endl;
   if(m_FrameCount > 60)
   {
-    m_FrameCount = 0;
+    m_FrameCount = 1;
   }
 
   if(bufferEnd > 1)
   {
-    if(m_FrameCount == 0 )
+    if(m_FrameCount >= 1 && m_FrameCount <= 10)
     {
       m_FruitSprite.setTexture(m_TxtrAnimBuff[m_BufferItr]);
 
-      CheckBuffItr(bufferStart, bufferEnd);
+      if(m_FrameCount == 9)
+      {
+        CheckBuffItr(bufferStart, bufferEnd);
+      }
     }
-    else if(m_FrameCount == 10)
+    else if(m_FrameCount >= 11 && m_FrameCount <= 20)
     {
       m_FruitSprite.setTexture(m_TxtrAnimBuff[m_BufferItr]);
 
-      CheckBuffItr(bufferStart, bufferEnd);
+      if(m_FrameCount == 19)
+      {
+        CheckBuffItr(bufferStart, bufferEnd);
+      }
     }
-    else if(m_FrameCount == 20)
+    else if(m_FrameCount >= 21 && m_FrameCount <= 30)
     {
       m_FruitSprite.setTexture(m_TxtrAnimBuff[m_BufferItr]);
 
-      CheckBuffItr(bufferStart, bufferEnd);
+      if(m_FrameCount == 29)
+      {
+        CheckBuffItr(bufferStart, bufferEnd);
+      }
     }
-    else if(m_FrameCount == 30)
+    else if(m_FrameCount >= 31 && m_FrameCount <= 40)
     {
       m_FruitSprite.setTexture(m_TxtrAnimBuff[m_BufferItr]);
 
-      CheckBuffItr(bufferStart, bufferEnd);
+      if(m_FrameCount == 39)
+      {
+        CheckBuffItr(bufferStart, bufferEnd);
+      }
     }
-    else if(m_FrameCount == 40)
+    else if(m_FrameCount >= 41 && m_FrameCount <= 50)
     {
       m_FruitSprite.setTexture(m_TxtrAnimBuff[m_BufferItr]);
 
-      CheckBuffItr(bufferStart, bufferEnd);
+      if(m_FrameCount == 49)
+      {
+        CheckBuffItr(bufferStart, bufferEnd);
+      }
     }
-    else if(m_FrameCount == 50)
+    else if(m_FrameCount >= 51 && m_FrameCount <= 60)
     {
       m_FruitSprite.setTexture(m_TxtrAnimBuff[m_BufferItr]);
 
-      CheckBuffItr(bufferStart, bufferEnd);
+      if(m_FrameCount == 59)
+      {
+        CheckBuffItr(bufferStart, bufferEnd);
+      }
     }
-    else if(m_FrameCount == 60)
-    {
-      m_FruitSprite.setTexture(m_TxtrAnimBuff[m_BufferItr]);
 
-      CheckBuffItr(bufferStart, bufferEnd);
-    }
+    // else if(m_FrameCount == 60)
+    // {
+    //   m_FruitSprite.setTexture(m_TxtrAnimBuff[m_BufferItr]);
+    //
+    //   CheckBuffItr(bufferStart, bufferEnd);
+    // }
   }
   else
   {

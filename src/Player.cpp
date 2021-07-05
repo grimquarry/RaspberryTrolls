@@ -320,7 +320,7 @@
 
   void Player::Draw(Window& l_window)
   {
-    m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+    //m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
     HandleAnimTexture();
     l_window.Draw(m_PlayerSprite);
   }

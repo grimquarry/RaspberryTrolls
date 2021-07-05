@@ -112,7 +112,7 @@ void Level::Draw(Window& l_window, sf::View view)
   m_LevelBackground.Draw(l_window);
 
   l_window.SetView(view);
-  
+
   m_VisibleTiles.clear();
   //Find and erase from the vector fruit that has been collected by player
   for(int i = 0; i < m_VisibleFruit.size(); ++i)
