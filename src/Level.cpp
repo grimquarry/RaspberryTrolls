@@ -37,8 +37,8 @@ void Level::LoadLevelMap(std::string mapPath)
   }
 
   m_LevelHeight = lineCount;
-  std::cout << "Level width is: " << m_LevelWidth << std::endl;
-  std::cout << "Level height is: " << m_LevelHeight << std::endl;
+  // std::cout << "Level width is: " << m_LevelWidth << std::endl;
+  // std::cout << "Level height is: " << m_LevelHeight << std::endl;
 
   m_LevelFile.close();
 }
@@ -75,7 +75,13 @@ void Level::SetBackgroundCenter(sf::Vector2f center)
 //CollisionHandler to let the Level object know to delete the fruit object from the map when the player collects it
 void Level::HandleCollectedFruit(sf::Vector2f fruitPos)
 {
-  m_FruitCoordinates = fruitPos;
+  for(int i = 0; i < m_FruitMap.size(); ++i)
+  {
+    if(m_FruitMap[i].GetPosition() == fruitPos)
+    {
+      m_FruitMap.erase(m_FruitMap.begin() + i);
+    }
+  }
 }
 
 void Level::BuildFruitMap()
@@ -114,14 +120,7 @@ void Level::Draw(Window& l_window, sf::View view)
   l_window.SetView(view);
 
   m_VisibleTiles.clear();
-  //Find and erase from the vector fruit that has been collected by player
-  for(int i = 0; i < m_VisibleFruit.size(); ++i)
-  {
-    if(m_FruitMap[i].GetPosition() == m_FruitCoordinates)
-    {
-      m_FruitMap.erase(m_FruitMap.begin() + i);
-    }
-  }
+
   m_VisibleFruit.clear();
 
   for(int i = 0; i < m_FruitMap.size(); ++i)
@@ -133,7 +132,7 @@ void Level::Draw(Window& l_window, sf::View view)
     }
 
     //std::cout << "Player position: " << player.GetPosition().x << ", " << player.GetPosition().y << std::endl;
-    std::cout << "Fruit Position is: " << m_VisibleFruit[i].GetPosition().x << ", " << m_VisibleFruit[i].GetPosition().y << std::endl;
+    //std::cout << "Fruit Position is: " << m_VisibleFruit[i].GetPosition().x << ", " << m_VisibleFruit[i].GetPosition().y << std::endl;
 
   }
 

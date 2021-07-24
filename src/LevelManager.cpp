@@ -61,7 +61,10 @@ bool LevelManager::CheckLevelChange() { return m_LevelChange; }
 
 void LevelManager::SetLevelChange(bool lvlchange) { m_LevelChange = lvlchange; }
 
-void LevelManager::HandleCollectedFruit(sf::Vector2f fruitPos) { m_Level_1_1.HandleCollectedFruit(fruitPos); }
+void LevelManager::HandleCollectedFruit(sf::Vector2f fruitPos)
+{
+  m_Level_1_1.HandleCollectedFruit(fruitPos);
+}
 
 void LevelManager::DrawLevel(Window& l_window, sf::View view)
 {

@@ -163,7 +163,7 @@ bool CollisionHandler::OnUserUpdate(Window& win, std::vector<Platform>& vPlats, 
     if(RectVsRect(player, vFruit[i]))
     {
       vFruit[i].SetCollectable(false);
-      std::cout << "We got a hit" << std::endl;
+      //std::cout << "We got a hit" << std::endl;
     }
 
   }

@@ -154,13 +154,17 @@ void Game::Update()
     m_CollisionHandler.OnUserUpdate(m_window, VisiblePlats, m_Player1, VisibleFruit, fTimeElapsed);
     for(int i = 0; i < VisibleFruit.size(); ++i)
     {
+      std::cout << "VisibleFruit Size: " << VisibleFruit.size() << std::endl;
       if(!VisibleFruit[i].GetCollectable())
       {
-        std::cout << "hell yeah" << std::endl;
+        std::cout << "Fruit X Position is: " << VisibleFruit[i].GetPosition().x << std::endl;
+        std::cout << "Fruit Y Position is: " << VisibleFruit[i].GetPosition().y << "\n" << std::endl;
         m_LevelManager.HandleCollectedFruit(VisibleFruit[i].GetPosition());
+        m_Player1.ScoreIncrement(50);
       }
     }
-    std::cout << "Player position: " << m_Player1.GetPosition().x << ", " << m_Player1.GetPosition().y << std::endl;
+    //m_LevelManager.RemoveCollectedFruit();
+    //std::cout << "Player position: " << m_Player1.GetPosition().x << ", " << m_Player1.GetPosition().y << std::endl;
 
     if(m_Player1.GetPosition().x < m_playerStartPositionX)
     {

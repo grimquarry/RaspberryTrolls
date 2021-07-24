@@ -7,6 +7,7 @@
 #include "Platform.h"
 #include "Background.h"
 #include "Fruit.h"
+#include "Player.h"
 
 class Level
 {
@@ -27,6 +28,7 @@ public:
   void SetBackgroundCenter(sf::Vector2f center);
 
   void HandleCollectedFruit(sf::Vector2f fruitPos);
+  void RemoveCollectedFruit();
 
   void BuildFruitMap();
 
@@ -56,8 +58,6 @@ private:
   sf::Vector2u m_WindowSize;
   sf::View m_ParallaxCamera;
   sf::Vector2f m_BackgroundCenter;
-
-  sf::Vector2f m_FruitCoordinates; //Stores position of fruit player collided with
 
   std::vector<Fruit> m_FruitMap;
 

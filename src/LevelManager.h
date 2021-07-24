@@ -3,6 +3,7 @@
 #include "Level.h"
 #include "Platform.h"
 #include "Fruit.h"
+#include "Player.h"
 
 class LevelManager
 {
@@ -21,7 +22,6 @@ public:
   void SetLevelChange(bool lvlchange);
 
   void HandleCollectedFruit(sf::Vector2f fruitPos);
-
   void DrawLevel(Window& l_window, sf::View view);
 
 private:
