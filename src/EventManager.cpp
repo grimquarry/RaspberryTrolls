@@ -149,6 +149,11 @@ void EventManager::HandleEvent(sf::Event& l_event)
           }
           else { m_ActionDirectives.push_back(PlayerAction::Run); }
         }
+        if(l_event.key.code == sf::Keyboard::F)
+        {
+          m_ActionDirectives.push_back(PlayerAction::Attack);
+          std::cout << "Attack Pushed back in EventManager" << std::endl;
+        }
       }
     break;
 

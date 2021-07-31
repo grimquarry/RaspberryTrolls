@@ -24,12 +24,20 @@ Game::Game()
 
   m_Player1.SetPlayerName("BUCKETS");
   std::string pathToTexture;
-  for(int i = 0; i <= 14; i++)
+
+  /* For loop below should have a basic index for identifying what animation frames are:
+    0 : Stand still
+    1 -13 : Walk/Run Animation
+    14 : jump
+    15 - 20 : Attack animation
+  */
+  for(int i = 0; i <= 20; i++)
   {
     pathToTexture = "../resources/images/BucketsMovement_" + std::to_string(i) + ".png";
     //std::cout << pathToTexture << std::endl;
     m_Player1.AddAnimTexture(pathToTexture);
   }
+  
   m_Player1.HandleAnimTexture();
   m_playerStartPositionX = ((float)m_window.GetSize().x / 2) - (m_Player1.GetSize().x / 2);
   m_playerStartPositionY = ((float)m_window.GetSize().y / 2) - (m_Player1.GetSize().y / 2);
@@ -154,11 +162,11 @@ void Game::Update()
     m_CollisionHandler.OnUserUpdate(m_window, VisiblePlats, m_Player1, VisibleFruit, fTimeElapsed);
     for(int i = 0; i < VisibleFruit.size(); ++i)
     {
-      std::cout << "VisibleFruit Size: " << VisibleFruit.size() << std::endl;
+      //std::cout << "VisibleFruit Size: " << VisibleFruit.size() << std::endl;
       if(!VisibleFruit[i].GetCollectable())
       {
-        std::cout << "Fruit X Position is: " << VisibleFruit[i].GetPosition().x << std::endl;
-        std::cout << "Fruit Y Position is: " << VisibleFruit[i].GetPosition().y << "\n" << std::endl;
+        // std::cout << "Fruit X Position is: " << VisibleFruit[i].GetPosition().x << std::endl;
+        // std::cout << "Fruit Y Position is: " << VisibleFruit[i].GetPosition().y << "\n" << std::endl;
         m_LevelManager.HandleCollectedFruit(VisibleFruit[i].GetPosition());
         m_Player1.ScoreIncrement(50);
       }

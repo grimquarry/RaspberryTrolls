@@ -4,6 +4,7 @@
   {
     m_Score = 0;
     m_WalkAnimItr = 0;
+    m_AttackAnimItr = 15;
     m_MaxWalkVelocity = 6.0f;
     m_MinWalkVelocity = -6.0f;
     m_MaxRunVelocity = 10.0f;
@@ -16,6 +17,7 @@
     m_Run = false;
     m_Jump = false;
     m_Land = false;
+    m_Attack = false;
     m_SideCollision = false;
   }
 
@@ -141,6 +143,10 @@
           m_Run = false;
         }
 
+        if(m_ActionsBuffer[i] == PlayerAction::Attack)
+        {
+          m_Attack = true;
+        }
       }
     }
 
@@ -180,8 +186,8 @@
         vel.x -= m_VelocityIncrement;
         if(vel.x < m_MinRunVelocity) { vel.x = m_MinRunVelocity; }
       }
-
     }
+
   }
 
   void Player::StopX()
@@ -250,6 +256,33 @@
     }
   }
 
+  void Player::AttackAnimation()
+  {
+    if(m_AttackAnimItr < 15 || m_AttackAnimItr > 20)
+    {
+      m_AttackAnimItr = 15;
+      m_Attack = false;
+    }
+
+    m_FrameCount++;
+    if(m_FrameCount > 60)
+    {
+      m_FrameCount = 1;
+    }
+
+    m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_AttackAnimItr]);
+
+    if(m_FrameCount > 2 && m_FrameCount % 5 == 0)
+    {
+      m_AttackAnimItr++;
+    }
+    // else if(m_FrameCount > 4 && m_FrameCount % 5 == 0 && !m_Run)
+    // {
+    //   m_AttackAnimItr++;
+    // }
+    //m_AttackAnimItr++;
+  }
+
   void Player::HandleAnimTexture()
   {
     /*Uncomment below to get movement and action states for debugging at this point*/
@@ -267,33 +300,40 @@
       m_Land = false;
     }
 
-    if(m_Right)
+    if(m_Attack)
     {
-
-      m_PlayerSprite.setScale({1, 1});
-      m_PlayerSprite.setOrigin(0.f, 0.f);
-
+      AttackAnimation();
     }
-    else if(m_Left)
+    else
     {
-
-      m_PlayerSprite.setScale({-1, 1});
-      m_PlayerSprite.setOrigin((float)m_PlayerSprite.getGlobalBounds().width, 0.0f); //Change origin for smoother animation when changing direction from right to left.
-    }
-
-    if(m_Jump || m_Land) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[14]); }
-    else if(m_Stop && !m_Jump || m_Stop && !m_Land) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]); }
-    else if(m_Walk && !m_Jump || m_Run && !m_Jump)
-    {
-      if(!m_Jump || m_Land)
+      if(m_Right)
       {
-        if(!m_SideCollision)
+
+        m_PlayerSprite.setScale({1, 1});
+        m_PlayerSprite.setOrigin(0.f, 0.f);
+
+      }
+      else if(m_Left)
+      {
+
+        m_PlayerSprite.setScale({-1, 1});
+        m_PlayerSprite.setOrigin((float)m_PlayerSprite.getGlobalBounds().width, 0.0f); //Change origin for smoother animation when changing direction from right to left.
+      }
+
+      if(m_Jump || m_Land) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[14]); }
+      else if(m_Stop && !m_Jump || m_Stop && !m_Land) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]); }
+      else if(m_Walk && !m_Jump || m_Run && !m_Jump)
+      {
+        if(!m_Jump || m_Land)
         {
-          WalkAnimation();
-        }
-        else if (m_SideCollision)
-        {
-          m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+          if(!m_SideCollision)
+          {
+            WalkAnimation();
+          }
+          else if (m_SideCollision)
+          {
+            m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+          }
         }
       }
     }
