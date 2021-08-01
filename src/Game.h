@@ -15,6 +15,7 @@
 #include "Player.h"
 #include "Platform.h"
 #include "DisplayBar.h"
+#include "Weapon.h"
 
 
 class Game {
@@ -60,4 +61,6 @@ private:
   CollisionHandler m_CollisionHandler;
 
   DisplayBar m_DisplayBar;
+
+  Weapon m_PlayerWeapon;
 };

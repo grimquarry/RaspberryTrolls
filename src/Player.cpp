@@ -18,6 +18,7 @@
     m_Jump = false;
     m_Land = false;
     m_Attack = false;
+    m_WeaponEngaged = false;
     m_SideCollision = false;
   }
 
@@ -116,14 +117,14 @@
       {
         if(m_ActionsBuffer[i] == PlayerAction::Jump && m_OnGround)
         {
-          std::cout << "Jump is registered in Player Class" << std::endl;
+          //std::cout << "Jump is registered in Player Class" << std::endl;
           m_Jump = true;
         }
         else if(m_ActionsBuffer[i] == PlayerAction::Land /*&& !m_OnGround*/)
         {
           m_Land = true;
           m_Jump = false;
-          std::cout << "THIS RAN!" << std::endl;
+          //std::cout << "THIS RAN!" << std::endl;
           vel.y += 10.0f;
         }
 
@@ -262,6 +263,7 @@
     {
       m_AttackAnimItr = 15;
       m_Attack = false;
+      m_WeaponEngaged = true;
     }
 
     m_FrameCount++;
@@ -272,15 +274,10 @@
 
     m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_AttackAnimItr]);
 
-    if(m_FrameCount > 2 && m_FrameCount % 5 == 0)
+    if(m_FrameCount > 2 && m_FrameCount % 3 == 0)
     {
       m_AttackAnimItr++;
     }
-    // else if(m_FrameCount > 4 && m_FrameCount % 5 == 0 && !m_Run)
-    // {
-    //   m_AttackAnimItr++;
-    // }
-    //m_AttackAnimItr++;
   }
 
   void Player::HandleAnimTexture()
@@ -356,6 +353,9 @@
     m_Position = pos;
     m_PlayerSprite.setPosition(m_Position);
   }
+
+  void Player::SetWeaponEngaged(bool b) { m_WeaponEngaged = b; }
+  bool Player::GetWeaponEngaged() { return m_WeaponEngaged; }
 
 
   void Player::Draw(Window& l_window)

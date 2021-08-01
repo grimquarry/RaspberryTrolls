@@ -9,6 +9,7 @@ https://youtu.be/8JJ-4JgR7Dg*/
 #include "Player.h"
 #include "Window.h"
 #include "Fruit.h"
+#include "Weapon.h"
 
 class CollisionHandler
 {
@@ -41,5 +42,5 @@ public:
 
   sf::Vector2f NormalizeVector(sf::Vector2f vector);
 
-  bool OnUserUpdate(Window& win, std::vector<Platform>& vPlats, Player& player, std::vector<Fruit>& vFruit, float fElapsedTime);
+  bool OnUserUpdate(Window& win, std::vector<Platform>& vPlats, Player& player, Weapon& weapon, std::vector<Fruit>& vFruit, float fElapsedTime);
 };

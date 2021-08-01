@@ -32,6 +32,8 @@ public:
   void SetSideCollision(bool b);
 
   sf::Vector2f vel;
+  bool m_Right;
+  bool m_Left;
 
   sf::Vector2f GetPosition() const;
 
@@ -47,6 +49,9 @@ public:
   void SetPosition(float x, float y);
 
   void SetPosition(sf::Vector2f pos);
+
+  void SetWeaponEngaged(bool b);
+  bool GetWeaponEngaged();
 
   void Draw(Window& l_window);
 
@@ -72,11 +77,10 @@ private:
   bool m_OnGround;
   bool m_Jump;
   bool m_Land;
-  bool m_Right;
-  bool m_Left;
   bool m_Stop;
   bool m_Run;
   bool m_Walk;
   bool m_Attack;
+  bool m_WeaponEngaged;
   bool m_SideCollision;
 };

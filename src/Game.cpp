@@ -37,12 +37,14 @@ Game::Game()
     //std::cout << pathToTexture << std::endl;
     m_Player1.AddAnimTexture(pathToTexture);
   }
-  
+
   m_Player1.HandleAnimTexture();
   m_playerStartPositionX = ((float)m_window.GetSize().x / 2) - (m_Player1.GetSize().x / 2);
   m_playerStartPositionY = ((float)m_window.GetSize().y / 2) - (m_Player1.GetSize().y / 2);
 
   m_Player1.SetPosition(m_playerStartPositionX, m_playerStartPositionY);
+
+  m_PlayerWeapon.SetTexture("../resources/images/Honey.png");
 
   m_gameCamera.setSize({ (float)m_window.GetSize().x, (float)m_window.GetSize().y });
   m_LevelManager.SetWindowSize(m_window.GetSize());
@@ -159,7 +161,7 @@ void Game::Update()
     std::vector<Platform> VisiblePlats = m_LevelManager.GetVisiblePlatforms();
     std::vector<Fruit> VisibleFruit = m_LevelManager.GetVisibleFruit();
     float fTimeElapsed = m_ElapsedTime.asSeconds() * 60; //multiplying by max framerate (set in Window class) to keep player from moving slowly
-    m_CollisionHandler.OnUserUpdate(m_window, VisiblePlats, m_Player1, VisibleFruit, fTimeElapsed);
+    m_CollisionHandler.OnUserUpdate(m_window, VisiblePlats, m_Player1, m_PlayerWeapon, VisibleFruit, fTimeElapsed);
     for(int i = 0; i < VisibleFruit.size(); ++i)
     {
       //std::cout << "VisibleFruit Size: " << VisibleFruit.size() << std::endl;
@@ -171,8 +173,6 @@ void Game::Update()
         m_Player1.ScoreIncrement(50);
       }
     }
-    //m_LevelManager.RemoveCollectedFruit();
-    //std::cout << "Player position: " << m_Player1.GetPosition().x << ", " << m_Player1.GetPosition().y << std::endl;
 
     if(m_Player1.GetPosition().x < m_playerStartPositionX)
     {
@@ -218,6 +218,11 @@ void Game::Render()
     m_window.SetView(m_gameCamera);
     m_LevelManager.DrawLevel(m_window, m_gameCamera);
     m_Player1.Draw(m_window);
+    std::cout << "Get Weapon Engaged is: " << m_Player1.GetWeaponEngaged() << std::endl;
+    if(m_Player1.GetWeaponEngaged())
+    {
+      m_PlayerWeapon.Draw(m_window);
+    }
     //m_window.SetView(m_window.GetDefaultView());
     m_DisplayBar.GetPlayerInfo(m_Player1);
     m_DisplayBar.Draw(m_window);

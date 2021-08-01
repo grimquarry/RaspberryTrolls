@@ -149,7 +149,7 @@ sf::Vector2f CollisionHandler::NormalizeVector(sf::Vector2f vector)
   return unitVector;
 }
 
-bool CollisionHandler::OnUserUpdate(Window& win, std::vector<Platform>& vPlats, Player& player, std::vector<Fruit>& vFruit, float fElapsedTime)
+bool CollisionHandler::OnUserUpdate(Window& win, std::vector<Platform>& vPlats, Player& player, Weapon& weapon, std::vector<Fruit>& vFruit, float fElapsedTime)
 {
   player.SetMoveDirectives(win.GetPlayerDirectives());
   player.SetActionDirectives(win.GetPlayerActions());
@@ -224,6 +224,10 @@ bool CollisionHandler::OnUserUpdate(Window& win, std::vector<Platform>& vPlats, 
   }
 
   player.SetPosition(player.GetPosition() + player.vel * fElapsedTime);
+  if(player.GetWeaponEngaged())
+  {
+    weapon.Update(player);
+  }
 
   return true;
 }

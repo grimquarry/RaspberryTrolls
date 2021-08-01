@@ -5,6 +5,7 @@ Fruit::Fruit()
   m_Collected = true;
   m_FrameCount = 1;
   m_BufferItr = 0;
+  m_PreviousBuffItr = -1;
 }
 
 Fruit::~Fruit() { }
@@ -44,8 +45,9 @@ void Fruit::HandleAnimTexture()
   int bufferStart = 0;
   int bufferEnd = m_TxtrAnimBuff.size() - 1;
 
-  // std::cout << "BufferItr is: " << m_BufferItr << std::endl;
-  // std::cout << "Buffer End value is: " << bufferEnd << std::endl;
+  std::cout << "BufferItr is: " << m_BufferItr << std::endl;
+  std::cout << "Buffer End value is: " << bufferEnd << std::endl;
+  std::cout << "Frame Count is: " << m_FrameCount << std::endl;
   if(m_FrameCount > 60)
   {
     m_FrameCount = 1;
