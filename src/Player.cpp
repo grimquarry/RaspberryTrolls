@@ -20,6 +20,7 @@
     m_Attack = false;
     m_WeaponEngaged = false;
     m_SideCollision = false;
+    m_FacingDirection = "Right";
   }
 
   Player::~Player() { }
@@ -305,14 +306,14 @@
     {
       if(m_Right)
       {
-
+        m_FacingDirection = "Right";
         m_PlayerSprite.setScale({1, 1});
         m_PlayerSprite.setOrigin(0.f, 0.f);
 
       }
       else if(m_Left)
       {
-
+        m_FacingDirection = "Left";
         m_PlayerSprite.setScale({-1, 1});
         m_PlayerSprite.setOrigin((float)m_PlayerSprite.getGlobalBounds().width, 0.0f); //Change origin for smoother animation when changing direction from right to left.
       }
@@ -356,6 +357,8 @@
 
   void Player::SetWeaponEngaged(bool b) { m_WeaponEngaged = b; }
   bool Player::GetWeaponEngaged() { return m_WeaponEngaged; }
+
+  std::string Player::GetFacingDirection() { return m_FacingDirection; }
 
 
   void Player::Draw(Window& l_window)

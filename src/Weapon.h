@@ -26,8 +26,14 @@ private:
     int m_MaxDistance;
     int m_DistanceTraveled;
 
+    int m_XVelocity;
+    int m_YVelocity;
+
     float m_Xpos;
     float m_Ypos;
 
     bool m_Returning;
+    bool m_YReturnAdjust;
+
+    std::string m_Direction;
 };

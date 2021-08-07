@@ -53,6 +53,8 @@ public:
   void SetWeaponEngaged(bool b);
   bool GetWeaponEngaged();
 
+  std::string GetFacingDirection();
+
   void Draw(Window& l_window);
 
 protected:
@@ -83,4 +85,5 @@ private:
   bool m_Attack;
   bool m_WeaponEngaged;
   bool m_SideCollision;
+  std::string m_FacingDirection;
 };
