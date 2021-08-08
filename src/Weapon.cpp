@@ -14,7 +14,7 @@ Weapon::~Weapon() { }
 void Weapon::Update(Player& player)
 {
   std::string sFacingDirection = player.GetFacingDirection();
-  std::cout << "Facing direction is: " << sFacingDirection << std::endl;
+  // std::cout << "Facing direction is: " << sFacingDirection << std::endl;
 
   if(m_DistanceTraveled == 0 && !m_Returning)
   {
@@ -36,11 +36,11 @@ void Weapon::Update(Player& player)
     //m_Xpos += 10;
     if(m_Direction == "Right")
     {
-      m_Xpos += m_XVelocity;
+      m_Xpos += m_XVelocity + player.vel.x;
     }
     else if(m_Direction == "Left")
     {
-      m_Xpos -= m_XVelocity;
+      m_Xpos -= m_XVelocity - player.vel.x;
     }
     // else
     // {
@@ -58,7 +58,7 @@ void Weapon::Update(Player& player)
     if(m_Direction == "Right")
     {
       m_Xpos -= m_XVelocity;
-      if(m_Xpos <= player.GetPosition().x)
+      if(m_Xpos <= player.GetPosition().x + player.GetSize().x)
       {
           if(!m_YReturnAdjust)
           {
@@ -106,6 +106,28 @@ void Weapon::Update(Player& player)
   }
 
   m_WeaponSprite.setPosition(m_Xpos, m_Ypos);
+}
+
+void Weapon::SpinAnimation()
+{
+  m_WeaponSprite.rotate(90.f);
+  m_WeaponSprite.setOrigin(m_WeaponSprite.getGlobalBounds().width / 2, m_WeaponSprite.getGlobalBounds().height / 2);
+}
+
+sf::Vector2f Weapon::GetPosition() const
+{
+  return m_WeaponSprite.getPosition();
+}
+
+void Weapon::Draw(Window& l_window)
+{
+  SpinAnimation();
+  l_window.Draw(m_WeaponSprite);
+}
+
+sf::Vector2f Weapon::GetSize() const
+{
+  return { m_WeaponSprite.getGlobalBounds().width, m_WeaponSprite.getGlobalBounds().height };
 }
 
 void Weapon::SetTexture(std::string path)

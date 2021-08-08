@@ -11,12 +11,15 @@ public:
 
   void Update(Player& player);
 
+  void SpinAnimation();
+
   void SetTexture(std::string path);
 
-  void Draw(Window& l_window)
-  {
-    l_window.Draw(m_WeaponSprite);
-  }
+  sf::Vector2f GetSize() const;
+
+  sf::Vector2f GetPosition() const;
+
+  void Draw(Window& l_window);
 
 protected:
   sf::Texture m_WeaponTexture;

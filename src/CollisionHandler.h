@@ -29,6 +29,7 @@ public:
   bool PointVsRect(const sf::Vector2f& p, const Platform& r);
 
   bool RectVsRect(const Player& r1, Fruit& r2);
+  bool RectVsRect(const Weapon& r1, Fruit& r2);
 
   //Uses Swept AABB algorithm explained really well in this video: https://youtu.be/8JJ-4JgR7Dg
   bool RayVsRect(const sf::Vector2f& ray_origin, const sf::Vector2f& ray_dir,

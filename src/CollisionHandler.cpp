@@ -25,6 +25,14 @@ bool CollisionHandler::RectVsRect(const Player& r1, Fruit& r2)
     r1.GetPosition().y + r1.GetSize().y > r2.GetPosition().y);
 }
 
+bool CollisionHandler::RectVsRect(const Weapon& r1, Fruit& r2)
+{
+  return (r1.GetPosition().x < r2.GetPosition().x + r2.GetSize().x &&
+    r1.GetPosition().x + r1.GetSize().x > r2.GetPosition().x &&
+    r1.GetPosition().y < r2.GetPosition().y + r2.GetSize().y &&
+    r1.GetPosition().y + r1.GetSize().y > r2.GetPosition().y);
+}
+
 //Uses Swept AABB algorithm explained really well in this video: https://youtu.be/8JJ-4JgR7Dg
 bool CollisionHandler::RayVsRect(const sf::Vector2f& ray_origin, const sf::Vector2f& ray_dir,
   const sf::RectangleShape& target, sf::Vector2f& contact_point,
@@ -160,7 +168,7 @@ bool CollisionHandler::OnUserUpdate(Window& win, std::vector<Platform>& vPlats, 
   {
     // std::cout << "Player position: " << player.GetPosition().x << ", " << player.GetPosition().y << std::endl;
     // std::cout << "Fruit Position is: " << vFruit[i].GetPosition().x << ", " << vFruit[i].GetPosition().y << std::endl;
-    if(RectVsRect(player, vFruit[i]))
+    if(RectVsRect(player, vFruit[i]) || RectVsRect(weapon, vFruit[i]))
     {
       vFruit[i].SetCollectable(false);
       //std::cout << "We got a hit" << std::endl;

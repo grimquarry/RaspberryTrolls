@@ -218,7 +218,7 @@ void Game::Render()
     m_window.SetView(m_gameCamera);
     m_LevelManager.DrawLevel(m_window, m_gameCamera);
     m_Player1.Draw(m_window);
-    std::cout << "Get Weapon Engaged is: " << m_Player1.GetWeaponEngaged() << std::endl;
+    //std::cout << "Get Weapon Engaged is: " << m_Player1.GetWeaponEngaged() << std::endl;
     if(m_Player1.GetWeaponEngaged())
     {
       m_PlayerWeapon.Draw(m_window);
