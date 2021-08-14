@@ -4,6 +4,7 @@
   {
     m_Score = 0;
     m_WalkAnimItr = 0;
+    m_NoWeaponItr = 22; //spot in the m_Movement buffer where player has no weapon and begins walking
     m_AttackAnimItr = 15;
     m_MaxWalkVelocity = 6.0f;
     m_MinWalkVelocity = -6.0f;
@@ -258,6 +259,32 @@
     }
   }
 
+  void Player::NoWeaponAnimation()
+  {
+    if(m_NoWeaponItr < 22 || m_NoWeaponItr > 34)
+    {
+      m_NoWeaponItr = 22;
+    }
+    m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_NoWeaponItr]);
+
+    //m_NoWeaponItr++;
+
+    m_FrameCount++;
+    if(m_FrameCount > 60)
+    {
+      m_FrameCount = 1;
+    }
+
+    if(m_FrameCount > 2 && m_FrameCount % 3 == 0 && m_Run)
+    {
+      m_NoWeaponItr++;
+    }
+    else if(m_FrameCount > 4 && m_FrameCount % 5 == 0 && !m_Run)
+    {
+      m_NoWeaponItr++;
+    }
+  }
+
   void Player::AttackAnimation()
   {
     if(m_AttackAnimItr < 15 || m_AttackAnimItr > 20)
@@ -319,18 +346,28 @@
       }
 
       if(m_Jump || m_Land) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[14]); }
-      else if(m_Stop && !m_Jump || m_Stop && !m_Land) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]); }
+      else if(m_Stop && !m_Jump && !m_WeaponEngaged || m_Stop && !m_Land && !m_WeaponEngaged) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]); }
+      else if(m_Stop && !m_Jump && m_WeaponEngaged || m_Stop && !m_Land && m_WeaponEngaged) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[21]); }
       else if(m_Walk && !m_Jump || m_Run && !m_Jump)
       {
         if(!m_Jump || m_Land)
         {
-          if(!m_SideCollision)
+          if(!m_SideCollision && !m_WeaponEngaged)
           {
             WalkAnimation();
           }
-          else if (m_SideCollision)
+          else if (m_SideCollision && !m_WeaponEngaged)
           {
             m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
+          }
+          else if(!m_SideCollision && m_WeaponEngaged)
+          {
+            NoWeaponAnimation();
+            std::cout << "Engaged" << std::endl;
+          }
+          else if(m_SideCollision && m_WeaponEngaged)
+          {
+            m_PlayerSprite.setTexture(m_TxtrAnimBuff[21]);
           }
         }
       }

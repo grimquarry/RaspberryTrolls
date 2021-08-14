@@ -42,6 +42,7 @@ public:
   sf::Vector2f GetSize() const;
 
   void WalkAnimation();
+  void NoWeaponAnimation();
   void AttackAnimation();
 
   void HandleAnimTexture();
@@ -67,6 +68,7 @@ private:
   int m_Score;
   sf::Vector2f m_Position;
   int m_WalkAnimItr;
+  int m_NoWeaponItr;
   int m_AttackAnimItr;
   int m_FrameCount;
   std::vector<PlayerMovement> m_MovementBuffer;

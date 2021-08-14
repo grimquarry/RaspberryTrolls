@@ -26,12 +26,14 @@ Game::Game()
   std::string pathToTexture;
 
   /* For loop below should have a basic index for identifying what animation frames are:
-    0 : Stand still
-    1 -13 : Walk/Run Animation
+    0 : Stand still with weapon
+    1 -13 : Walk/Run Animation with weapon
     14 : jump
     15 - 20 : Attack animation
+    21 : Stand still without Weapon
+    22 - 34 : Walk/Run Animation wihout weapon
   */
-  for(int i = 0; i <= 20; i++)
+  for(int i = 0; i <= 34; i++)
   {
     pathToTexture = "../resources/images/BucketsMovement_" + std::to_string(i) + ".png";
     //std::cout << pathToTexture << std::endl;
