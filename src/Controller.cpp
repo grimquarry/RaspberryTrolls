@@ -38,12 +38,16 @@ void Controller::SetDefaultButtonMap()
 {
   m_ButtonMap.clear();
   ButtonCount();
-  std::string defalutDirectives[3] = {"Run", "Jump", "Attack"};
+  std::string defaultDirectives[3] = {"Run", "Jump", "Attack"};
 
-  for(int i = 0; i < 3; ++i)
-  {
-    m_ButtonMap.insert({defalutDirectives[i], i});
-  }
+  // for(int i = 0; i < 3; ++i)
+  // {
+  //   m_ButtonMap.insert({defaultDirectives[i], i});
+  // }
+
+  m_ButtonMap.insert({defaultDirectives[0], 0});
+  m_ButtonMap.insert({defaultDirectives[1], 1});
+  m_ButtonMap.insert({"Attack", 5}); //The default were okay, but it makes the attack button difficult to use.  The most logical attack button would be L or R
 
   m_ButtonMap.insert({"Start", m_ButtonNumber - 1});
   m_ButtonMap.insert({"Select", m_ButtonNumber - 2});

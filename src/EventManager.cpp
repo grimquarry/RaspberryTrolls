@@ -50,6 +50,7 @@ void EventManager::HandleEvent(sf::Event& l_event)
         }
         if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Attack")))
         {
+          m_ActionDirectives.push_back(PlayerAction::Attack);
           std::cout << "Attack button was pressed" << std::endl;
         }
         if(sf::Joystick::isButtonPressed(m_Controller1.GetIndex(), m_Controller1.ButtonPushed("Select")))
