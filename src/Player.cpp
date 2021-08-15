@@ -325,7 +325,7 @@
       m_Land = false;
     }
 
-    if(m_Attack)
+    if(m_Attack && !m_WeaponEngaged)
     {
       AttackAnimation();
     }
@@ -345,7 +345,17 @@
         m_PlayerSprite.setOrigin((float)m_PlayerSprite.getGlobalBounds().width, 0.0f); //Change origin for smoother animation when changing direction from right to left.
       }
 
-      if(m_Jump || m_Land) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[14]); }
+      if(m_Jump || m_Land)
+      {
+        if(m_WeaponEngaged)
+        {
+          m_PlayerSprite.setTexture(m_TxtrAnimBuff[35]);
+        }
+        else
+        {
+          m_PlayerSprite.setTexture(m_TxtrAnimBuff[14]);
+        }
+      }
       else if(m_Stop && !m_Jump && !m_WeaponEngaged || m_Stop && !m_Land && !m_WeaponEngaged) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]); }
       else if(m_Stop && !m_Jump && m_WeaponEngaged || m_Stop && !m_Land && m_WeaponEngaged) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[21]); }
       else if(m_Walk && !m_Jump || m_Run && !m_Jump)
