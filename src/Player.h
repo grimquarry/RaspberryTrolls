@@ -44,6 +44,10 @@ public:
   void WalkAnimation();
   void NoWeaponAnimation();
   void AttackAnimation();
+  void CatchAnimation();
+  void StillCatchAnimation();
+
+  void CatchWeapon(bool b);
 
   void HandleAnimTexture();
 
@@ -70,6 +74,8 @@ private:
   int m_WalkAnimItr;
   int m_NoWeaponItr;
   int m_AttackAnimItr;
+  int m_CatchAnimItr;
+  int m_StillCatchAnimItr;
   int m_FrameCount;
   std::vector<PlayerMovement> m_MovementBuffer;
   std::vector<PlayerAction> m_ActionsBuffer;
@@ -87,5 +93,6 @@ private:
   bool m_Attack;
   bool m_WeaponEngaged;
   bool m_SideCollision;
+  bool m_CatchWeapon;
   std::string m_FacingDirection;
 };

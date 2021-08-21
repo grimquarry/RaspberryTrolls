@@ -33,8 +33,10 @@ Game::Game()
     21 : Stand still without Weapon
     22 - 34 : Walk/Run Animation wihout weapon
     35 : Jump with no weapon
+    36 - 37 : Catch Weapon running or walking
+    38 - 39 : Catch Weapon Standing still
   */
-  for(int i = 0; i <= 35; i++)
+  for(int i = 0; i <= 39; i++)
   {
     pathToTexture = "../resources/images/BucketsMovement_" + std::to_string(i) + ".png";
     //std::cout << pathToTexture << std::endl;

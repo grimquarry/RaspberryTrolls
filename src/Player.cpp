@@ -5,7 +5,9 @@
     m_Score = 0;
     m_WalkAnimItr = 0;
     m_NoWeaponItr = 22; //spot in the m_Movement buffer where player has no weapon and begins walking
-    m_AttackAnimItr = 15;
+    m_AttackAnimItr = 15; //spot in the m_Movement buffer where player attack animation begins.
+    m_CatchAnimItr = 36; //spot in the m_MovementBuffer where weapon catch animation begins.
+    m_StillCatchAnimItr = 38;  //spot in m_MovementBuffer where still character catches weapon.
     m_MaxWalkVelocity = 6.0f;
     m_MinWalkVelocity = -6.0f;
     m_MaxRunVelocity = 10.0f;
@@ -19,6 +21,7 @@
     m_Jump = false;
     m_Land = false;
     m_Attack = false;
+    m_CatchWeapon = false;
     m_WeaponEngaged = false;
     m_SideCollision = false;
     m_FacingDirection = "Right";
@@ -308,6 +311,55 @@
     }
   }
 
+  void Player::CatchAnimation()
+  {
+    if(m_CatchAnimItr > 37)
+    {
+      m_CatchAnimItr = 36;
+      m_CatchWeapon = false;
+    }
+
+    m_FrameCount++;
+    if(m_FrameCount > 60)
+    {
+      m_FrameCount = 1;
+    }
+
+    m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_CatchAnimItr]);
+
+    if(m_FrameCount > 2 && m_FrameCount % 3 == 0)
+    {
+      m_CatchAnimItr++;
+    }
+  }
+
+  void Player::StillCatchAnimation()
+  {
+    if(m_StillCatchAnimItr > 39)
+    {
+      m_StillCatchAnimItr = 38;
+      m_CatchWeapon = false;
+    }
+
+    m_FrameCount++;
+    if(m_FrameCount > 60)
+    {
+      m_FrameCount = 1;
+    }
+
+    m_PlayerSprite.setTexture(m_TxtrAnimBuff[m_StillCatchAnimItr]);
+
+    if(m_FrameCount > 2 && m_FrameCount % 3 == 0)
+    {
+      m_StillCatchAnimItr++;
+    }
+  }
+
+  void Player::CatchWeapon(bool b)
+  {
+    m_CatchWeapon = b;
+  }
+
   void Player::HandleAnimTexture()
   {
     /*Uncomment below to get movement and action states for debugging at this point*/
@@ -356,24 +408,30 @@
           m_PlayerSprite.setTexture(m_TxtrAnimBuff[14]);
         }
       }
-      else if(m_Stop && !m_Jump && !m_WeaponEngaged || m_Stop && !m_Land && !m_WeaponEngaged) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]); }
+      else if(m_Stop && !m_Jump && !m_WeaponEngaged && !m_CatchWeapon || m_Stop && !m_Land && !m_WeaponEngaged && !m_CatchWeapon) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]); }
       else if(m_Stop && !m_Jump && m_WeaponEngaged || m_Stop && !m_Land && m_WeaponEngaged) { m_PlayerSprite.setTexture(m_TxtrAnimBuff[21]); }
+      else if(m_Stop && !m_Jump && !m_WeaponEngaged && m_CatchWeapon || m_Stop && !m_Land && !m_WeaponEngaged && m_CatchWeapon) { StillCatchAnimation(); }
       else if(m_Walk && !m_Jump || m_Run && !m_Jump)
       {
         if(!m_Jump || m_Land)
         {
-          if(!m_SideCollision && !m_WeaponEngaged)
+          if(!m_SideCollision && !m_WeaponEngaged && !m_CatchWeapon)
           {
             WalkAnimation();
           }
-          else if (m_SideCollision && !m_WeaponEngaged)
+          else if (m_SideCollision && !m_WeaponEngaged && !m_CatchWeapon)
           {
             m_PlayerSprite.setTexture(m_TxtrAnimBuff[0]);
           }
-          else if(!m_SideCollision && m_WeaponEngaged)
+          else if(!m_SideCollision && m_WeaponEngaged && !m_CatchWeapon)
           {
             NoWeaponAnimation();
             std::cout << "Engaged" << std::endl;
+          }
+          else if(m_CatchWeapon)
+          {
+            std::cout << "This Ran" << std::endl;
+            CatchAnimation();
           }
           else if(m_SideCollision && m_WeaponEngaged)
           {

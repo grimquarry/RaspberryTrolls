@@ -65,6 +65,7 @@ void Weapon::Update(Player& player)
             m_DistanceTraveled = 0;
             player.SetWeaponEngaged(false);
             m_Returning = false;
+            player.CatchWeapon(true);
             m_Ypos = -100; //This is a not-so-elloquent way of deailing with weapon positions showing up in the spot the cycle ended.  You should fix this.
           }
           else
@@ -83,6 +84,7 @@ void Weapon::Update(Player& player)
           m_DistanceTraveled = 0;
           player.SetWeaponEngaged(false);
           m_Returning = false;
+          player.CatchWeapon(true);
           m_Ypos = -100; //This is a not-so-elloquent way of deailing with weapon positions showing up in the spot the cycle ended.  You should fix this.
         }
         else
