@@ -51,6 +51,11 @@ Game::Game()
 
   m_PlayerWeapon.SetTexture("../resources/images/Honey.png");
 
+  Enemy enemy;
+  m_EnemyBuffer.push_back(enemy);
+  m_EnemyBuffer[0].AddAnimTexture("../resources/images/RaspMob.png");
+  m_EnemyBuffer[0].SetPosition( { 1800.f, 854.f } );
+
   m_gameCamera.setSize({ (float)m_window.GetSize().x, (float)m_window.GetSize().y });
   m_LevelManager.SetWindowSize(m_window.GetSize());
 }
@@ -222,6 +227,7 @@ void Game::Render()
   {
     m_window.SetView(m_gameCamera);
     m_LevelManager.DrawLevel(m_window, m_gameCamera);
+    m_EnemyBuffer[0].Draw(m_window);
     m_Player1.Draw(m_window);
     //std::cout << "Get Weapon Engaged is: " << m_Player1.GetWeaponEngaged() << std::endl;
     if(m_Player1.GetWeaponEngaged())

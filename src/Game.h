@@ -16,6 +16,7 @@
 #include "Platform.h"
 #include "DisplayBar.h"
 #include "Weapon.h"
+#include "Enemy.h"
 
 
 class Game {
@@ -32,6 +33,7 @@ protected: //Apperantly anything tied to an SFML texture must be public or prote
   //Level m_Level_1_1;
   Player m_Player1;
   std::vector<Platform> vPlats;
+  std::vector<Enemy> m_EnemyBuffer;
 
 
 private:
@@ -63,4 +65,6 @@ private:
   DisplayBar m_DisplayBar;
 
   Weapon m_PlayerWeapon;
+
+
 };
